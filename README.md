@@ -2,7 +2,7 @@
 
 Alejandro Cañas Borreguero
 
-Alberto Barrais Bellerin
+Alberto Barrais Bellerín
 
 Manuel Cano García
 
