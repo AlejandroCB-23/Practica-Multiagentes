@@ -1,0 +1,71 @@
+
+services:
+  python-scripts:
+    build:
+      context: ./scripts
+      dockerfile: Dockerfile  # Asegúrate de tener un Dockerfile en la carpeta ./scripts para Python
+    container_name: python-scripts
+    volumes:
+      - ./scripts:/app/scripts  # Mapea tu carpeta local de scripts a /app/scripts en el contenedor
+    depends_on:
+      - postgres-db
+    networks:
+      - app-network
+
+  postgres-db:
+    image: postgres:13
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: user
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Volumen para persistir los datos
+    healthcheck:
+      test: ["CMD", "pg_isready", "-h", "postgres-db", "-p", "5432", "-d", "postgres", "-U", "user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+  fastapi-app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile  # Asegúrate de tener un Dockerfile en la carpeta ./backend para FastAPI
+    container_name: fastapi-app
+    environment:
+      DATABASE_URL: postgresql+psycopg2://user:user@postgres-db:5432/postgres
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: always
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres-db
+    networks:
+      - app-network
+
+  react-app:
+    build:
+      context: ./my-app
+      dockerfile: Dockerfile
+    container_name: react-app
+    volumes:
+      - ./my-app:/app/my-app
+    ports:
+     - "8080:80"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
