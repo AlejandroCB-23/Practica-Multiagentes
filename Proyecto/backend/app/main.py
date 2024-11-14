@@ -40,3 +40,61 @@ def read_item(id: int):
     
     return person
 
+@app.get("/get-info/{id}")
+async def get_info(id: int):
+    """
+    """
+    session = connect_db()
+
+    person = session.query(Person).filter(Person.id == id).first()
+    session.close()
+    if person is None:
+       raise HTTPException(status_code=404, detail="Person not found")
+    
+    return {
+        "id": person.id,
+        "nombre": person.nombre
+    }
+
+@app.post("/post-record/{id}")
+async def post_records(id: int, nombre: str=None):
+    """
+    """
+    session = connect_db()
+    new_person = Person(id=id, nombre=nombre)
+    session.add(new_person)
+    session.commit()
+    session.close()
+    return {
+        "id": new_person.id,
+        "nombre": new_person.nombre
+    }
+
+
+@app.delete("/delete-record/{id}")
+async def delete_record(id: int):
+    """
+    """
+    session = connect_db()
+    person = session.query(Person).filter(Person.id == id).first()
+    if person is None:
+        raise HTTPException(status_code=404, detail="Person not found")
+    session.delete(person)
+    session.commit()
+    session.close()
+    return {"message": "Record deleted successfully"}
+
+
+@app.put("/update-record/{id}")
+async def update_record(id: int, nombre: str):
+    """
+    """
+    session = connect_db()
+    person = session.query(Person).filter(Person.id == id).first()
+    if person is None:
+        raise HTTPException(status_code=404, detail="Person not found")
+    person.nombre = nombre
+    session.commit()
+    session.close()
+    return {"message": "Record updated successfully"}
+
