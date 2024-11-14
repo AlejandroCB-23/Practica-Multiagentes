@@ -18,17 +18,25 @@ function App() {
 
     async function handleClick() {
       try {
+        // Control de errores
+        const number = parseInt(inputValue,10); //el numero 10 indica que es en base 10
+
+        if (isNaN(number) || number <= 0) { //isNaN es una función que devuelve true si el valor no es un número
+          alert('Por favor, ingrese un número válido');
+          return;
+        }
         // Construye la URL con el parámetro de consulta
-        const response = await fetch('http://localhost:8000/consulta_id/' + inputValue);
+        const response = await fetch('http://localhost:8000/consulta_nombre/' + number);
   
         if (!response.ok) {
           throw new Error('Error en la solicitud');
         }
-  
-        const data = await response.json(); // Suponiendo que la respuesta es JSON
-        setDisplayText(data.nombre);
+
+        const data = await response.json(); // Guarda la respuesta en la variable data en formato JSON
+
+        setDisplayText(data);
       } catch (error) {
-        console.error('Error al consultar el backend:', error);
+        console.error('[ERROR]:', error);
         setDisplayText('Error al obtener respuesta del servidor');
       }
     }
@@ -58,8 +66,8 @@ function App() {
 
           {/* Mostramos el componente MyButton */}
           <MyButton />
-          
-          <p>Respuesta del servidor: {displayText}</p>
+          <p>Respuesta del servidor: {displayText.nombre} </p>
+
         </div>
       </header>
     </div>
