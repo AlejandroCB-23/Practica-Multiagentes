@@ -13,6 +13,9 @@ RUN npm install
 # Copia todo el código de la aplicación
 COPY . .
 
+# Cambia el permiso de la carpeta app (descomentar esta linea si es necesario)
+#RUN chmod -R 755 /app
+
 # Ejecuta el build de la aplicación para producción
 RUN npm run build
 
