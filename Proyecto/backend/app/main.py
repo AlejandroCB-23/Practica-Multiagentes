@@ -64,11 +64,12 @@ async def post_records(id: int, nombre: str=None):
     new_person = Person(id=id, nombre=nombre)
     session.add(new_person)
     session.commit()
-    session.close()
-    return {
+    response = {
         "id": new_person.id,
         "nombre": new_person.nombre
     }
+    session.close()
+    return response
 
 
 @app.delete("/delete-record/{id}")
