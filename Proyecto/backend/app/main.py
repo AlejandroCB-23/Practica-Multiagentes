@@ -56,11 +56,12 @@ async def get_info(id: int):
         "nombre": person.nombre
     }
 
-@app.post("/post-record/{id}")
-async def post_records(id: int, nombre: str=None):
+@app.post("/post-record/{nombre}")
+async def post_records(nombre: str=None):
     """
     """
     session = connect_db()
+    id = session.query(func.max(Person.id)).scalar() + 1
     new_person = Person(id=id, nombre=nombre)
     session.add(new_person)
     session.commit()
