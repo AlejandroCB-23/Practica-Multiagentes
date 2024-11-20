@@ -30,16 +30,6 @@ def read_root():
     session.close()
     return person.nombre
 
-@app.get("/consulta_nombre/{id}")
-def read_item(id: int):
-    session = connect_db()
-    person = session.query(Person).filter(Person.id == id).first()
-    session.close()
-    if person is None:
-        raise HTTPException(status_code=404, detail="Item not found")
-    
-    return person
-
 @app.get("/get-info/{id}")
 async def get_info(id: int):
     """
