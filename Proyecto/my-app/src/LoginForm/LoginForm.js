@@ -1,4 +1,8 @@
 import './LoginForm.css';
+import userIcon from '../assets/user.svg'
+import passwordIcon from '../assets/password.svg'
+
+
 
 function LoginForm() {
     return (
@@ -6,14 +10,15 @@ function LoginForm() {
             <article>
                 <h1>Login</h1>
                 <form>
-                    <label>
-                        <p>Usuario</p>
-                        <input type="text" name="usuario" />
-                    </label>
-                    <label>
-                        <p>Contraseña:</p>
-                        <input type="password" name="contraseña" />
-                    </label>
+                    <div className="input-wrapper">
+                        <img src={userIcon} alt="User Icon" />
+                        <input type="text" name="user" placeholder="Nombre de Usuario" required />
+                    </div>
+
+                    <div className="input-wrapper">
+                        <img src={passwordIcon} alt="Password Icon" />
+                        <input type="password" name="password" placeholder="Contraseña" required />
+                    </div>
                     <button type="submit">Iniciar sesión</button>
                 </form>
             </article>

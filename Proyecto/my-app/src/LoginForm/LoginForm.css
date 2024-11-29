@@ -1,71 +1,100 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
 
 .Wrapper {
-    display: grid;
+    display: flex;
     align-items: center;
     justify-content: center;
     height: 100vh;
-    background-color: green;
+    background: url(../assets/background.jpg) no-repeat center center/cover;
 }
 
-article { 
+
+article {
     display: grid;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: 1fr 3fr;
     align-items: center;
-    justify-content: top;
     color: white;
-    padding-bottom: 300px;
+    border: 2px solid rgb(255, 255, 255, 0.2);
+    background-color: transparent;
+    backdrop-filter:blur(20px);
+    padding: 20px;
+    border-radius: 10px;
 }
 
-h1 {
+article h1 {
+    font-size: 46px;
     text-align: center;
     color: white;
 }
+
 
 form {
     display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr 1fr 1fr;
-    grid-gap: 20px;
+    grid-template-rows:  repeat(3, 1fr);
+    grid-template-columns: 1fr; 
     text-align: center;
     align-items: center;
     justify-content: center;
-}
-label {
-    font-size: 20px;
-    display: grid;
-    grid-template-columns: 6fr 8fr;
+    width: 400px;
 }
 
-label p {
-    margin: 0;
-    padding: 10px;
+
+
+.input-wrapper {
+    position: relative;
+    width: 100%;
+    height: 60px;
+    margin: 20px 0;
+}
+
+
+.input-wrapper img {
+    position: absolute; 
+    top: 50%;
+    right: 10px; 
+    transform: translateY(-50%); 
+    height: 20px;
+}
+
+.input-wrapper input {
+    padding-left: 40px; 
     color: white;
-    text-align: right;
+    padding: 20px 45px 20px 10px;
+    font-size: 20px;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border-radius: 25px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
-input {
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    width: 350px;
+.input-wrapper input:focus {
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+.input-wrapper input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
 }
 
 button {
-    background-color: #6200ea;
-    color: white;
+    background-color: white;
+    color: #222024;
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 26px;
     margin: auto;
     max-width: 500px;
     max-height: 300px;
     min-width: 200px;
-    min-height: 50px;       
-  }
+    min-height: 50px;      
+}
 
-  button:hover {
-    background-color: #3700b3;
-  }
+button:hover {
+    background-color: #f2f2f2;
+}
