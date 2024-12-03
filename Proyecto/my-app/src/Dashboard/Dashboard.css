@@ -1,0 +1,35 @@
+div {
+  margin: 20px;
+  display: grid;
+  grid-template-rows: 1fr 9fr;
+  grid-gap: 20px;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  color: white
+
+}
+article {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto;
+  align-items: center;
+  justify-content: top;
+}
+
+button {
+  background-color: #6200ea;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 10px;
+  min-width: 500px;
+  min-height: 500px;
+}
+
+button:hover {
+  background-color: #3700b3;
+}

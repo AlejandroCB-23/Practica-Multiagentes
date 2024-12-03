@@ -1,30 +1,15 @@
-import './App.css';
-
-function Boton({ texto, onClick }) {
-  return (
-    <button onClick={onClick}>
-      {texto}
-    </button>
-  );
-}
-
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LoginForm from './LoginForm/LoginForm';
+import Dashboard from './Dashboard/Dashboard';
 function App() {
-  const handleClick = () => {
-    alert('¡Botón clicado!');
-  };
-
-  return (
-    <div>
-      <h1>¡Hola, React!</h1>
-      <article>
-      <Boton texto="Añadir" onClick={handleClick} />
-      <Boton texto="Obtener" onClick={handleClick} />
-      <Boton texto="Modificar" onClick={handleClick} />
-      <Boton texto="Eliminar" onClick={handleClick} />
-      
-      </article>
-    </div>
-  );
+    return (
+        <Router>
+            <Routes>
+                <Route path="/" element={<LoginForm />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+            </Routes>
+        </Router>
+    );
 }
 
 export default App;
