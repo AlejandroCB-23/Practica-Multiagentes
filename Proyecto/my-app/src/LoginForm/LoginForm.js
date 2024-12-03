@@ -10,8 +10,8 @@ function LoginForm() {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    //NOTE: Test user authentication function
-    //TOFIX: Replace this function with a real authentication function
+    // NOTE: Test user authentication function
+    // TOFIX: Replace this function with a real authentication function
     const authenticateUser = (username, password) => {
         const mockUser = {
             username: 'admin',
@@ -31,11 +31,11 @@ function LoginForm() {
     };
 
     return (
-        <div className="Wrapper">
-            <article>
+        <div className="Wrapper-Login">
+            <article className="article-Login">
                 <h1>Login</h1>
-                <form onSubmit={handleSubmit}>
-                    <div className="input-wrapper">
+                <form className="form-Login" onSubmit={handleSubmit}>
+                    <div className="input-wrapper-Login">
                         <img src={userIcon} alt="User Icon" />
                         <input
                             type="text"
@@ -43,11 +43,9 @@ function LoginForm() {
                             placeholder="Nombre de Usuario"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            required
                         />
                     </div>
-
-                    <div className="input-wrapper">
+                    <div className="input-wrapper-Login">
                         <img src={passwordIcon} alt="Password Icon" />
                         <input
                             type="password"
@@ -55,11 +53,10 @@ function LoginForm() {
                             placeholder="Contraseña"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            required
                         />
                     </div>
-                    {error && <p className="error">{error}</p>}
-                    <button type="submit">Iniciar sesión</button>
+                    {error && <p>{error}</p>}
+                    <button type="submit" className="button-Login">Login</button>
                 </form>
             </article>
         </div>

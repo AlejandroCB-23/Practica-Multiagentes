@@ -1,4 +1,4 @@
-div {
+.div-dashboard {
   margin: 20px;
   display: grid;
   grid-template-rows: 1fr 9fr;
@@ -9,7 +9,7 @@ div {
   color: white
 
 }
-article {
+.article-dashboard {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: auto;
@@ -17,7 +17,7 @@ article {
   justify-content: top;
 }
 
-button {
+.button-dashboard {
   background-color: #6200ea;
   color: white;
   padding: 10px 20px;
@@ -30,6 +30,6 @@ button {
   min-height: 500px;
 }
 
-button:hover {
+.button-dashboard:hover {
   background-color: #3700b3;
 }
