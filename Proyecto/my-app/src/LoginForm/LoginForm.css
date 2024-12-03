@@ -19,7 +19,7 @@ article {
     grid-template-rows: 1fr 3fr;
     align-items: center;
     color: white;
-    border: 2px solid rgb(255, 255, 255, 0.2);
+    border: 2px solid rgba(0, 0, 0, 0.6);
     background-color: transparent;
     backdrop-filter:blur(20px);
     padding: 20px;
@@ -71,6 +71,7 @@ form {
     background: transparent;
     border-radius: 25px;
     border: 2px solid rgba(255, 255, 255, 0.2);
+    
 }
 
 .input-wrapper input:focus {
@@ -92,7 +93,9 @@ button {
     max-width: 500px;
     max-height: 300px;
     min-width: 200px;
-    min-height: 50px;      
+    min-height: 50px;   
+    font-family: 'Arial';
+    font-weight: bold;
 }
 
 button:hover {
