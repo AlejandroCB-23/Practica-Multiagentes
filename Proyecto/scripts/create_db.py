@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from your_model_file import User, Role, Base  # Adjust the import path as needed
+from user_table import User, Role, Base  # Adjust the import path as needed
 
 DATABASE_URL = 'postgresql+psycopg2://user:user@postgres-db:5432/postgres'
 
