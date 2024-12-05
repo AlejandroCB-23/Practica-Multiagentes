@@ -1,6 +1,9 @@
 from sqlalchemy import create_engine,select,delete
 from sqlalchemy.orm import sessionmaker
 from person import Person
+import ETL_Extraction
+
+
 
 DB_NAME = 'user'
 URL_API = 'http://127.0.0.1:8000/'
@@ -19,6 +22,12 @@ def main():
     session.add(new_rec)
     session.commit()
     print("Persona añadida a la bbdd")
+    
+
+    # Extraer los datos
+    ETL_Extraction.extraccion()
+    print("Datos extraidos")
+
 
 if __name__ == '__main__':
     main()
