@@ -26,7 +26,7 @@ function App() {
           return;
         }
         // Construye la URL con el parámetro de consulta
-        const response = await fetch('http://localhost:8000/consulta_nombre/' + number);
+        const response = await fetch('http://localhost:8000/get-info/' + number);
   
         if (!response.ok) {
           throw new Error('Error en la solicitud');

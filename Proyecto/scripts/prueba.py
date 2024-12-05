@@ -2,6 +2,7 @@ from sqlalchemy import create_engine,select,delete
 from sqlalchemy.orm import sessionmaker
 from person import Person
 import ETL_Extraction
+import ETL_Treatment
 
 
 
@@ -27,6 +28,9 @@ def main():
     # Extraer los datos
     ETL_Extraction.extraccion()
     print("Datos extraidos")
+    # Tratar los datos
+    ETL_Treatment.main()
+    print("Datos tratados")
 
 
 if __name__ == '__main__':
