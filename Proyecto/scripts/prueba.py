@@ -3,6 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from person import Person
 import ETL_Extraction
 import ETL_Treatment
+import ETL_Load
 
 
 
@@ -31,6 +32,9 @@ def main():
     # Tratar los datos
     ETL_Treatment.main()
     print("Datos tratados")
+    # Cargar los datos
+    ETL_Load.main()
+
 
 
 if __name__ == '__main__':
