@@ -86,3 +86,17 @@
   .submitButton:hover {
     background-color: #357abd;
   }
+
+  .errorMessage {
+    color: red;
+    font-size: 14px;
+  }
+
+  .successMessage {
+    color: green;
+    font-size: 14px;
+  }
+
+  .detailsContainer {
+    margin-top: 20px;
+  }

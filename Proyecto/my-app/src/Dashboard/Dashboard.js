@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import './Dashboard.css';
-import DatabaseForm_Add from './DatabaseForm-Add';
-import DatabaseForm_Edit from './DatabaseForm-Edit';
-import DatabaseForm_Get from './DatabaseForm-Get';
-import DatabaseForm_Delete from './DatabaseForm-Delete';
+import DatabaseFormAdd from './DatabaseForm-Add';
+import DatabaseFormEdit from './DatabaseForm-Edit';
+import DatabaseFormGet from './DatabaseForm-Get';
+import DatabaseFormDelete from './DatabaseForm-Delete';
 
 
 
@@ -27,10 +27,10 @@ function Dashboard() {
                 <Boton texto="Modificar" onClick={()=> setShowFormEdit(true)} />
                 <Boton texto="Eliminar" onClick={()=> setShowFormDelete(true)} />
             </article>
-            {showFormAdd && <DatabaseForm_Add setShowForm={setShowFormAdd} />}
-            {showFormEdit && <DatabaseForm_Edit setShowForm={setShowFormEdit} />}
-            {showFormDelete && <DatabaseForm_Delete setShowForm={setShowFormDelete} />}
-            {showFormGet && <DatabaseForm_Get setShowForm={setShowFormGet} />}
+            {showFormAdd && <DatabaseFormAdd setShowForm={setShowFormAdd} />}
+            {showFormEdit && <DatabaseFormEdit setShowForm={setShowFormEdit} />}
+            {showFormDelete && <DatabaseFormDelete setShowForm={setShowFormDelete} />}
+            {showFormGet && <DatabaseFormGet setShowForm={setShowFormGet} />}
         </div>
     );
 }
