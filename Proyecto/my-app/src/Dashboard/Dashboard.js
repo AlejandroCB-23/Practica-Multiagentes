@@ -27,6 +27,9 @@ function Dashboard() {
                 <Boton texto="Modificar" onClick={()=> setShowFormEdit(true)} />
                 <Boton texto="Eliminar" onClick={()=> setShowFormDelete(true)} />
             </article>
+            <article className='article-akinomedrogo'>
+                <Boton texto="Akino" onClick={()=> window.location.href = '/akino'} />
+            </article>
             {showFormAdd && <DatabaseFormAdd setShowForm={setShowFormAdd} />}
             {showFormEdit && <DatabaseFormEdit setShowForm={setShowFormEdit} />}
             {showFormDelete && <DatabaseFormDelete setShowForm={setShowFormDelete} />}
