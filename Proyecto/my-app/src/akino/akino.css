@@ -1,0 +1,32 @@
+.div-akino {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.article-akino {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 500px;
+    height: 500px;
+    background-color: rgb(255, 255, 255);
+    border-radius: 10px;
+}
+
+.button-akino {
+    background-color: rgb(0, 0, 0);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button-akino:hover {
+    background-color: rgb(255, 255, 255);
+}
