@@ -1,0 +1,107 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+.Wrapper-Login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: url(../assets/background.jpg) no-repeat center center/cover;
+}
+
+
+.article-Login {
+    display: grid;
+    grid-template-rows: 1fr 3fr;
+    align-items: center;
+    color: white;
+    border: 2px solid rgba(0, 0, 0, 0.6);
+    background-color: transparent;
+    backdrop-filter:blur(20px);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.article-Login h1 {
+    font-size: 46px;
+    text-align: center;
+    color: white;
+}
+
+
+.form-Login {
+    display: grid;
+    grid-template-rows:  repeat(3, 1fr);
+    grid-template-columns: 1fr; 
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    width: 400px;
+}
+
+.error-message {
+    color: blue; 
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.input-wrapper-Login {
+    position: relative;
+    width: 100%;
+    height: 60px;
+    margin: 20px 0;
+}
+
+
+.input-wrapper-Login img {
+    position: absolute; 
+    top: 50%;
+    right: 10px; 
+    transform: translateY(-50%); 
+    height: 20px;
+}
+
+.input-wrapper-Login input {
+    padding-left: 40px; 
+    color: white;
+    padding: 20px 45px 20px 10px;
+    font-size: 20px;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border-radius: 25px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    
+}
+
+.input-wrapper-Login input:focus {
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+.input-wrapper-Login input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.button-Login {
+    background-color: white;
+    color: #222024;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 26px;
+    margin: auto;
+    max-width: 500px;
+    max-height: 300px;
+    min-width: 200px;
+    min-height: 50px;   
+    font-family: 'Arial';
+    font-weight: bold;
+}
+
+.button-Login:hover {
+    background-color: #f2f2f2;
+}

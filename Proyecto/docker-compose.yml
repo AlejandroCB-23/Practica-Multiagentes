@@ -7,6 +7,7 @@ services:
     container_name: python-scripts
     volumes:
       - ./scripts:/app/scripts  # Mapea tu carpeta local de scripts a /app/scripts en el contenedor
+      - ./datasets:/app/datasets  # Mapea tu carpeta local de datasets a /app/datasets en el contenedor
     depends_on:
       - postgres-db
     networks:
@@ -59,7 +60,7 @@ services:
     volumes:
       - ./my-app:/app/my-app
     ports:
-     - "8080:80"
+     - "3000:80"
     networks:
       - app-network
 
