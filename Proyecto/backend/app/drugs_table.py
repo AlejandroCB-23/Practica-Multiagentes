@@ -9,7 +9,7 @@ Base = declarative_base()
 class Drug(Base):  
     __tablename__ = 'drugs'
     id = Column(Integer, primary_key=True)
-    name = Column(String)
+    name = Column(String, unique=True)
     short_term_effects = Column(String)
     long_term_effects = Column(String)
     history = Column(String)
