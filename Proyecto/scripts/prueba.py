@@ -19,11 +19,11 @@ def connect_db():
     
 def main(): 
     # Vamos a añadir una persona simplemente
-    session = connect_db()
-    new_rec = Person(nombre="uwu")
-    session.add(new_rec)
-    session.commit()
-    print("Persona añadida a la bbdd")
+    # session = connect_db()
+    # new_rec = Person(nombre="uwu")
+    # session.add(new_rec)
+    # session.commit()
+    # print("Persona añadida a la bbdd")
     
 
     # Extraer los datos
