@@ -3,18 +3,17 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
-from drugs_table import Drug  # Assuming the Drug model is in a separate file named drug.py
+from drugs_table import Drug 
 
 app = FastAPI()
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Permitir solicitudes CORS desde localhost:8080
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080"],  # Permitir solo el frontend en localhost:8080
+    allow_origins=["http://localhost:3000"],  
     allow_credentials=True,
-    allow_methods=["*"],  # Permitir todos los métodos (GET, POST, etc.)
-    allow_headers=["*"],  # Permitir todos los encabezados
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 def connect_db():
@@ -53,6 +52,31 @@ async def get_drug(id: int):
     except Exception as e:
         raise HTTPException(status_code=404, detail=f"Drug not found: {str(e)}")
     finally:
+        session.close()
+
+@app.get("/get-drug-by-name/{name}")
+async def get_drug_by_name(name: str):
+    """
+    Get a drug by its name
+    """
+    try:
+        session = connect_db()
+        drug = session.query(Drug).filter_by(name=name).first()
+        if not drug:
+            raise HTTPException(status_code=404, detail=f"Drug not found")
+        return {
+            "id": drug.id,
+            "name": drug.name,
+            "short_term_effects": drug.short_term_effects,
+            "long_term_effects": drug.long_term_effects,
+            "history": drug.history,
+            "age_range_plus_consumption": drug.age_range_plus_consumption,
+            "consumition_frequency": drug.consumition_frequency,
+            "probability_of_abandonment": drug.probability_of_abandonment
+        }
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=f"Drug not found: {str(e)}")
+    finally:    
         session.close()
 
 @app.post("/post-drug")
