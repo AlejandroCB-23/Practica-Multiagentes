@@ -3,3 +3,4 @@ Proyecto/my-app/node_modules/
 Proyecto/my-app/package-lock.json
 *.pyc
 __pycache__
+.env

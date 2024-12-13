@@ -3,6 +3,13 @@ from sqlalchemy import create_engine,select,delete
 from sqlalchemy.orm import sessionmaker
 import pandas as pd
 from user_table import User, Base
+from dotenv import load_dotenv
+import os
+
+
+load_dotenv()
+DEFAULT_PASSWORD = os.getenv('DEFAULT_PASSWORD')
+
 
 
 DB_NAME = 'user'
@@ -37,7 +44,7 @@ def main():
             "rizzler": ["Sofia", "Fran"]
         }
 
-        password_hash = hash_password("1234")
+        password_hash = hash_password(DEFAULT_PASSWORD)
 
         for role, names in roles.items():
             for name in names:
