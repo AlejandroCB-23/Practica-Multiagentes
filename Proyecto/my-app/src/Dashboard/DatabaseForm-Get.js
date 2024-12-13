@@ -16,17 +16,10 @@ function DatabaseDetailForm({ setShowForm }) {
         method: 'GET'
       });
 
-      //TODO: DELETE
-      console.log(1)
-      console.log(response)
       if (response.ok) {
         const data = await response.json();
         setDrugDetails(data);
-        //TODO: DELETE
-        console.log(2)
-        console.log(data)
       } else {
-        console.log(3)
         throw new Error('Droga no encontrada');
       }
     } catch (error) {
