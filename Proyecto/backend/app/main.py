@@ -132,6 +132,22 @@ async def delete_drug(id: int):
     session.close()
     return {"message": "Drug record deleted successfully"}
 
+@app.delete("/delete-drug-by-name/{name}")
+async def delete_drug_by_name(name: str):
+    """
+    Delete a drug record by its name
+    """
+    session = connect_db()
+    drug = session.query(Drug).filter_by(name=name).first()
+    if drug is None:
+        raise HTTPException(status_code=404, detail="Drug not found")
+    
+    session.delete(drug)
+    session.commit()
+    session.close()
+    return {"message": "Drug record deleted successfully"}
+
+
 @app.put("/update-drug/{id}")
 async def update_drug(
     id: int, 
@@ -155,6 +171,45 @@ async def update_drug(
     # Update fields only if they are provided
     if name is not None:
         drug.name = name
+    if short_term_effects is not None:
+        drug.short_term_effects = short_term_effects
+    if long_term_effects is not None:
+        drug.long_term_effects = long_term_effects
+    if history is not None:
+        drug.history = history
+    if age_range_plus_consumption is not None:
+        drug.age_range_plus_consumption = age_range_plus_consumption
+    if consumition_frequency is not None:
+        drug.consumition_frequency = consumition_frequency
+    if probability_of_abandonment is not None:
+        drug.probability_of_abandonment = probability_of_abandonment
+    
+    session.commit()
+    session.close()
+    return {"message": "Drug record updated successfully"}
+
+@app.put("/update-drug-by-name")
+async def update_drug_by_name(
+    name: str, 
+    new_name: str = None, 
+    short_term_effects: str = None, 
+    long_term_effects: str = None,
+    history: str = None,
+    age_range_plus_consumption: float = None,
+    consumition_frequency: float = None,
+    probability_of_abandonment: float = None
+):
+    """
+    Update an existing drug record by its name
+    """
+    session = connect_db()
+    drug = session.query(Drug).filter_by(name=name).first()
+    
+    if drug is None:
+        raise HTTPException(status_code=404, detail="Drug not found")
+
+    if new_name is not None:
+        drug.name = new_name
     if short_term_effects is not None:
         drug.short_term_effects = short_term_effects
     if long_term_effects is not None:
