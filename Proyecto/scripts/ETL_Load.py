@@ -21,7 +21,6 @@ def main():
     """Create database from the metadata"""
     engine = create_engine(DATABASE_URL)
     Base.metadata.create_all(bind=engine)
-    print("Database created")
 
     #Read the csv file
     drugs_data = pd.read_csv('../datasets/dataset_tratados.csv')

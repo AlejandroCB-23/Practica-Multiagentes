@@ -4,6 +4,7 @@ from person import Person
 import ETL_Extraction
 import ETL_Treatment
 import ETL_Load
+import Load_users
 
 
 
@@ -18,22 +19,22 @@ def connect_db():
     return session
     
 def main(): 
-    # Vamos a añadir una persona simplemente
-    # session = connect_db()
-    # new_rec = Person(nombre="uwu")
-    # session.add(new_rec)
-    # session.commit()
-    # print("Persona añadida a la bbdd")
-    
+
+    #Cragamos usuariod
+    Load_users.main()
+    print("Usuarios cargados")
 
     # Extraer los datos
     ETL_Extraction.extraccion()
     print("Datos extraidos")
+
     # Tratar los datos
     ETL_Treatment.main()
     print("Datos tratados")
+
     # Cargar los datos
     ETL_Load.main()
+    print("Datos cargados")
 
 
 
