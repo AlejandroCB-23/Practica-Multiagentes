@@ -13,7 +13,7 @@ class Drug(Base):
     short_term_effects = Column(String)
     long_term_effects = Column(String)
     history = Column(String)
-    age_range_plus_consumption = Column(Float)
+    age_range_plus_consumption = Column(String)
     consumition_frequency = Column(Float)
     probability_of_abandonment = Column(Float)
 

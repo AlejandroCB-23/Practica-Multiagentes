@@ -37,12 +37,21 @@ def main():
                 print(f"Drug {row['droga']} already exists. Skipping...")
                 continue 
 
+            if row['rango_edad_mas_consumo'] == "1":
+                    edad ="Entre 7-10 años"
+            elif row['rango_edad_mas_consumo'] == "2":
+                    edad ="Entre 11-12 años"
+            elif row['rango_edad_mas_consumo'] == "3":
+                    edad = "13 años"
+            else:
+                 edad = "14 años"
+
             drug = Drug(
                     name=row['droga'],
                     short_term_effects=row['efectos_corto_plazo'],
                     long_term_effects=row['efectos_largo_plazo'],
                     history=row['historia'],
-                    age_range_plus_consumption=row['rango_edad_mas_consumo'],
+                    age_range_plus_consumption=edad,
                     consumition_frequency=row['frecuencia_consumo (cig/mes|resto/año)'],
                     probability_of_abandonment=row['probabilidad_abandono']
                 )
