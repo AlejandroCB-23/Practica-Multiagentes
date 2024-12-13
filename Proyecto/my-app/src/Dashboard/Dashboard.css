@@ -1,35 +1,119 @@
+/* Estilo general para el dashboard */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%; 
+  overflow: hidden; 
+  font-family: 'Arial', sans-serif; 
+}
+
+.wrapped-menu {
+  background: url(../assets/background-menu3.jpg) no-repeat center center/cover;
+}
+
 .div-dashboard {
-  margin: 20px;
+  margin: 0;  
   display: grid;
-  grid-template-rows: 1fr 9fr;
-  grid-gap: 20px;
+  grid-template-rows: auto 1fr; /* Primera fila para el título, segunda para el contenido */
+  grid-template-columns: 1fr 1fr;  /* Dos columnas para los botones */
+  gap: 10px; 
+  color: black;
   text-align: center;
-  align-items: center;
-  justify-content: center;
-  color: white
-
+  height: 100vh; 
+  box-sizing: border-box;  
+  padding-top: 2%;
 }
-.article-dashboard {
+
+.header-dashboard {
+  grid-column: span 2; 
+  text-align: center;
+  font-size: 50px; 
+  margin-left: 30%;
+  margin-right: 30%;
+  padding: 20px; 
+  background-color: transparent;
+  backdrop-filter:blur(20px);
+  border-radius: 30px; 
+  border: 6px solid rgba(0, 0, 0, 0.6);
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2); 
+  display: inline-block;
+  padding-top: 10px;
+}
+
+.header-dashboard h1 {
+  margin: 0px; 
+  font-size: 2.5rem; 
+}
+
+/* Estilo para la sección izquierda */
+.left-section {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto;
-  align-items: center;
-  justify-content: top;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr); 
+  justify-items: center; 
+  align-items: center; 
+  height: 100%;  
+  padding-top: 5%; 
+  padding-left: 5%; 
 }
 
-.button-dashboard {
-  background-color: #6200ea;
-  color: white;
-  padding: 10px 20px;
+/* Estilo para la sección derecha */
+.right-section {
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+  height: 100%;  
+  padding-top: 5%; 
+  padding-left: 15%; 
+}
+
+/* Estilo base para todos los botones */
+.button-dashboard, .button-akino {
+  background-color: transparent !important; 
+  backdrop-filter:blur(30px) !important; 
+  border: 6px solid rgba(0, 0, 0, 0.6) !important; 
+  color: black !important; 
+  padding: 10px 10px;
   border: none;
-  border-radius: 5px;
+  border-radius: 30px !important; 
   cursor: pointer;
-  font-size: 16px;
-  margin: 10px;
-  min-width: 500px;
-  min-height: 500px;
+  font-size: 2.5rem !important; 
+  text-align: center;
+  box-sizing: border-box;  
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Transición suave para el color de fondo */
 }
 
-.button-dashboard:hover {
-  background-color: #3700b3;
+/* Estilo para los botones normales */
+.button-dashboard {
+  width: 30vw;  
+  height: 30vw;  
+  max-width: 250px; 
+  max-height: 250px; 
 }
+
+/* Estilo específico para el botón Akino */
+.button-akino {
+  font-size: 3rem !important; 
+  width: 60vw;  
+  height: 60vw; 
+  max-width: 400px; 
+  max-height: 400px; 
+}
+
+.button-akino:hover, .button-dashboard:hover {
+  background-color: #dd57b3 !important; 
+  transform: scale(1.05); 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

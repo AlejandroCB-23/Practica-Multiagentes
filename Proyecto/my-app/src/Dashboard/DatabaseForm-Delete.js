@@ -15,12 +15,8 @@ function DatabaseDetailForm({ setShowForm }) {
     setSuccess('');
 
     try {
-      const response = await fetch(`/api/database/delete`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ drug_name: drugName })
+      const response = await fetch(`http://localhost:8000/delete-drug-by-name/${encodeURIComponent(drugName)}`, {
+        method: 'DELETE'
       });
 
       if (response.ok) {

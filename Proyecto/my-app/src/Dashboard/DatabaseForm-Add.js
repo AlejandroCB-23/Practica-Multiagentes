@@ -3,23 +3,24 @@ import styles from './DatabaseForm.module.css';
 
 function DatabaseForm({setShowForm}) {
   const [formData, setFormData] = useState({
-    drug_name: '',             
-    drug_description: '',      
-    drug_immediate_effects: '',
-    drug_long_term_effects: '', 
-    drug_age_range: '',        
-    drug_consumption_frequency: '', 
-    drug_dropout_likelihood: ''
+    name: '',             
+    short_term_effects: '',      
+    long_term_effects: '',
+    history: '', 
+    age_range_plus_consumption: '',        
+    consumition_frequency: '', 
+    probability_of_abandonment: ''
   });
+
   const resetForm = () => {
     setFormData({
-      drug_name: '',             
-      drug_description: '',      
-      drug_immediate_effects: '',
-      drug_long_term_effects: '', 
-      drug_age_range: '',        
-      drug_consumption_frequency: '', 
-      drug_dropout_likelihood: ''
+      name: '',             
+      short_term_effects: '',      
+      long_term_effects: '',
+      history: '', 
+      age_range_plus_consumption: '',        
+      consumition_frequency: '', 
+      probability_of_abandonment: ''
     });
   };
 
@@ -32,14 +33,19 @@ function DatabaseForm({setShowForm}) {
   };
 
   const handleSubmit = async (e) => {
+    const params = new URLSearchParams({
+      name: formData.name,
+      short_term_effects: formData.short_term_effects,
+      long_term_effects: formData.long_term_effects,
+      history: formData.history,
+      age_range_plus_consumption: formData.age_range_plus_consumption,
+      consumition_frequency: formData.consumition_frequency,
+      probability_of_abandonment: formData.probability_of_abandonment
+    }).toString();
     e.preventDefault();
     try {
-      const response = await fetch('/api/database/add', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
+      const response = await fetch(`http://localhost:8000/post-drug?${params}`, {
+        method: 'POST'
       });
 
       if (response.ok) {
@@ -54,7 +60,6 @@ function DatabaseForm({setShowForm}) {
       setShowForm(false);
       resetForm();
     }
-
   };
 
   const handleClose = () => {
@@ -69,12 +74,12 @@ function DatabaseForm({setShowForm}) {
           <h2 className={styles.formTitle}>Añadir Nueva Droga</h2>
           
           <div className={styles.formGroup}>
-            <label htmlFor="drug_name" className={styles.label}>Nombre de la Droga</label>
+            <label htmlFor="name" className={styles.label}>Nombre de la Droga</label>
             <input
               type="text"
-              id="drug_name"
-              name="drug_name"
-              value={formData.drug_name}
+              id="name"
+              name="name"
+              value={formData.name}
               onChange={handleChange}
               className={styles.input}
               required
@@ -82,11 +87,11 @@ function DatabaseForm({setShowForm}) {
           </div>
   
           <div className={styles.formGroup}>
-            <label htmlFor="drug_description" className={styles.label}>Descripción</label>
+            <label htmlFor="short_term_effects" className={styles.label}>Efectos Inmediatos</label>
             <textarea
-              id="drug_description"
-              name="drug_description"
-              value={formData.drug_description}
+              id="short_term_effects"
+              name="short_term_effects"
+              value={formData.short_term_effects}
               onChange={handleChange}
               className={styles.textarea}
               required
@@ -94,11 +99,11 @@ function DatabaseForm({setShowForm}) {
           </div>
   
           <div className={styles.formGroup}>
-            <label htmlFor="drug_immediate_effects" className={styles.label}>Efectos Inmediatos</label>
+            <label htmlFor="long_term_effects" className={styles.label}>Efectos a Largo Plazo</label>
             <textarea
-              id="drug_immediate_effects"
-              name="drug_immediate_effects"
-              value={formData.drug_immediate_effects}
+              id="long_term_effects"
+              name="long_term_effects"
+              value={formData.long_term_effects}
               onChange={handleChange}
               className={styles.textarea}
               required
@@ -106,11 +111,11 @@ function DatabaseForm({setShowForm}) {
           </div>
   
           <div className={styles.formGroup}>
-            <label htmlFor="drug_long_term_effects" className={styles.label}>Efectos a Largo Plazo</label>
+            <label htmlFor="history" className={styles.label}>Historia</label>
             <textarea
-              id="drug_long_term_effects"
-              name="drug_long_term_effects"
-              value={formData.drug_long_term_effects}
+              id="history"
+              name="history"
+              value={formData.history}
               onChange={handleChange}
               className={styles.textarea}
               required
@@ -118,12 +123,12 @@ function DatabaseForm({setShowForm}) {
           </div>
   
           <div className={styles.formGroup}>
-            <label htmlFor="drug_age_range" className={styles.label}>Rango de Edad de Consumo</label>
+            <label htmlFor="age_range_plus_consumption" className={styles.label}>Rango de Edad de Consumo</label>
             <input
               type="text"
-              id="drug_age_range"
-              name="drug_age_range"
-              value={formData.drug_age_range}
+              id="age_range_plus_consumption"
+              name="age_range_plus_consumption"
+              value={formData.age_range_plus_consumption}
               onChange={handleChange}
               className={styles.input}
               required
@@ -131,12 +136,12 @@ function DatabaseForm({setShowForm}) {
           </div>
   
           <div className={styles.formGroup}>
-            <label htmlFor="drug_consumption_frequency" className={styles.label}>Frecuencia de Consumo</label>
+            <label htmlFor="consumition_frequency" className={styles.label}>Frecuencia de Consumo</label>
             <input
               type="text"
-              id="drug_consumption_frequency"
-              name="drug_consumption_frequency"
-              value={formData.drug_consumption_frequency}
+              id="consumition_frequency"
+              name="consumition_frequency"
+              value={formData.consumition_frequency}
               onChange={handleChange}
               className={styles.input}
               required
@@ -144,12 +149,12 @@ function DatabaseForm({setShowForm}) {
           </div>
   
           <div className={styles.formGroup}>
-            <label htmlFor="drug_dropout_likelihood" className={styles.label}>Probabilidad de Abandono</label>
+            <label htmlFor="probability_of_abandonment" className={styles.label}>Probabilidad de Abandono</label>
             <input
               type="text"
-              id="drug_dropout_likelihood"
-              name="drug_dropout_likelihood"
-              value={formData.drug_dropout_likelihood}
+              id="probability_of_abandonment"
+              name="probability_of_abandonment"
+              value={formData.probability_of_abandonment}
               onChange={handleChange}
               className={styles.input}
               required
@@ -165,6 +170,5 @@ function DatabaseForm({setShowForm}) {
     </div>
   );
 }
-
 
 export default DatabaseForm;

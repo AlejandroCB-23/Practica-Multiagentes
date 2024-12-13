@@ -12,11 +12,8 @@ function DatabaseDetailForm({ setShowForm }) {
     setDrugDetails(null);
 
     try {
-      const response = await fetch(`/api/database/get?drug_name=${encodeURIComponent(drugName)}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
+      const response = await fetch(`http://localhost:8000/get-drug-by-name/${encodeURIComponent(drugName)}`, {
+        method: 'GET'
       });
 
       if (response.ok) {
@@ -71,16 +68,16 @@ function DatabaseDetailForm({ setShowForm }) {
               {error}
             </div>
           )}
-
           {drugDetails && (
             <div className={styles.detailsContainer}>
               <h3>Detalles de la Droga</h3>
-              <p><strong>Descripción:</strong> {drugDetails.drug_description}</p>
-              <p><strong>Efectos Inmediatos:</strong> {drugDetails.drug_immediate_effects}</p>
-              <p><strong>Efectos a Largo Plazo:</strong> {drugDetails.drug_long_term_effects}</p>
-              <p><strong>Rango de Edad:</strong> {drugDetails.drug_age_range}</p>
-              <p><strong>Frecuencia de Consumo:</strong> {drugDetails.drug_consumption_frequency}</p>
-              <p><strong>Probabilidad de Abandono:</strong> {drugDetails.drug_dropout_likelihood}</p>
+              <p><strong>Nombre:</strong> {drugDetails.name}</p>
+              <p><strong>Efectos Inmediatos:</strong> {drugDetails.short_term_effects}</p>
+              <p><strong>Efectos a Largo Plazo:</strong> {drugDetails.long_term_effects}</p>
+              <p><strong>Historia:</strong> {drugDetails.history}</p>
+              <p><strong>Rango de Edad:</strong> {drugDetails.age_range_plus_consumption}</p>
+              <p><strong>Frecuencia de Consumo:</strong> {drugDetails.consumition_frequency}</p>
+              <p><strong>Probabilidad de Abandono:</strong> {drugDetails.probability_of_abandonment}</p>
             </div>
           )}
         </form>
