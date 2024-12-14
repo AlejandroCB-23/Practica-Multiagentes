@@ -33,6 +33,12 @@ function DatabaseForm({setShowForm}) {
   };
 
   const handleSubmit = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('No hay sesión activa. Por favor inicie sesión.');
+      return;
+    }
     const params = new URLSearchParams({
       name: formData.name,
       short_term_effects: formData.short_term_effects,
@@ -42,12 +48,16 @@ function DatabaseForm({setShowForm}) {
       consumition_frequency: formData.consumition_frequency,
       probability_of_abandonment: formData.probability_of_abandonment
     }).toString();
-    e.preventDefault();
+
     try {
       const response = await fetch(`http://localhost:8000/post-drug?${params}`, {
-        method: 'POST'
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
-
+      
       if (response.ok) {
         alert('Elemento añadido exitosamente');
       } else {

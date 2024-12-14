@@ -38,9 +38,19 @@ function DatabaseForm({ setShowForm }) {
 
   const handleGetDrug = async (e) => {
     e.preventDefault();
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('No hay sesión activa. Por favor inicie sesión.');
+      return;
+    }
+
     try {
       const response = await fetch(`http://localhost:8000/get-drug-by-name/${encodeURIComponent(formData.name)}`, {
-        method: 'GET'
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
 
       if (response.ok) {
@@ -64,6 +74,11 @@ function DatabaseForm({ setShowForm }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('No hay sesión activa. Por favor inicie sesión.');
+      return;
+    }
     
     const params = new URLSearchParams({
       name: formData.name,
@@ -78,6 +93,10 @@ function DatabaseForm({ setShowForm }) {
     try {
       const response = await fetch(`http://localhost:8000/update-drug-by-name?${params}`, {
         method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
 
       if (response.ok) {
