@@ -5,6 +5,7 @@ import ETL_Extraction
 import ETL_Treatment
 import ETL_Load
 import Load_users
+import create_db
 
 
 
@@ -19,6 +20,10 @@ def connect_db():
     return session
     
 def main(): 
+
+    #Cargamos los roles
+    create_db.main()
+    print("Roles cargados")
 
     #Cragamos usuariod
     Load_users.main()
