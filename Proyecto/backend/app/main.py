@@ -9,7 +9,7 @@ from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from drugs_table import Drug
-from user_table import User
+from user_table import User, Role
 
 
 load_dotenv()
@@ -35,6 +35,45 @@ pwd_context = CryptContext(
     schemes=["bcrypt"],
     deprecated="auto"
 )
+from functools import wraps
+from fastapi import HTTPException, Depends
+
+def role_required(required_permission):
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(*args, current_user: str = Depends(get_current_user), **kwargs):
+
+            session = connect_db()
+            try:
+ 
+                user = session.query(User).filter(User.name == current_user).first()
+                
+                user_role = session.query(Role).filter(Role.name == user.role).first()
+                
+                if user_role:
+
+                    permission_map = {
+                        'get': user_role.can_get,
+                        'post': user_role.can_post,
+                        'put': user_role.can_put,
+                        'delete': user_role.can_delete
+                    }
+                    
+
+                    if permission_map.get(required_permission, False):
+                        return await func(*args, **kwargs)
+                
+
+                raise HTTPException(status_code=403, detail="Insufficient permissions")
+            
+            except Exception as e:
+                 raise HTTPException(status_code=403, detail=f"Permission check failed: {str(e)}")
+            finally:
+                session.close()
+        
+        return wrapper
+    return decorator
+
 
 def connect_db():
     engine = create_engine(DATABASE_URL)
@@ -81,6 +120,7 @@ def read_root():
     return drug.name
 
 @app.get("/get-drug/{id}")
+@role_required('get')
 async def get_drug(id: int, current_user: str = Depends(get_current_user)):
     session = connect_db()
     drug = session.query(Drug).filter(Drug.id == id).one()
@@ -96,6 +136,7 @@ async def get_drug(id: int, current_user: str = Depends(get_current_user)):
     }
 
 @app.get("/get-drug-by-name/{name}")
+@role_required('get')
 async def get_drug_by_name(name: str, current_user: str = Depends(get_current_user)):
     session = connect_db()
     drug = session.query(Drug).filter_by(name=name).first()
@@ -113,6 +154,7 @@ async def get_drug_by_name(name: str, current_user: str = Depends(get_current_us
     }
 
 @app.post("/post-drug")
+@role_required('post')
 async def post_drug(
     name: str,
     short_term_effects: str = None,
@@ -149,6 +191,7 @@ async def post_drug(
     return response
 
 @app.delete("/delete-drug/{id}")
+@role_required('delete')
 async def delete_drug(id: int, current_user: str = Depends(get_current_user)):
     session = connect_db()
     drug = session.query(Drug).filter(Drug.id == id).first()
@@ -161,6 +204,7 @@ async def delete_drug(id: int, current_user: str = Depends(get_current_user)):
     return {"message": "Drug record deleted successfully"}
 
 @app.delete("/delete-drug-by-name/{name}")
+@role_required('delete')
 async def delete_drug_by_name(name: str, current_user: str = Depends(get_current_user)):
     session = connect_db()
     drug = session.query(Drug).filter_by(name=name).first()
@@ -173,6 +217,7 @@ async def delete_drug_by_name(name: str, current_user: str = Depends(get_current
     return {"message": "Drug record deleted successfully"}
 
 @app.put("/update-drug/{id}")
+@role_required('put')
 async def update_drug(
     id: int,
     name: str = None,
@@ -209,6 +254,7 @@ async def update_drug(
     return {"message": "Drug record updated successfully"}
 
 @app.put("/update-drug-by-name")
+@role_required('put')
 async def update_drug_by_name(
     name: str,
     new_name: str = None,
