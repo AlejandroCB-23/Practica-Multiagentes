@@ -1,19 +1,39 @@
 import os
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
-from drugs_table import Drug 
+from jose import JWTError, jwt
+from passlib.context import CryptContext
+from datetime import datetime, timedelta
+from dotenv import load_dotenv
+from drugs_table import Drug
+from user_table import User
+
+
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY", "your_secret_key")
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 app = FastAPI()
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+)
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+pwd_context = CryptContext(
+    schemes=["bcrypt"],
+    deprecated="auto"
 )
 
 def connect_db():
@@ -21,6 +41,37 @@ def connect_db():
     factory = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     session = factory()
     return session
+
+def create_access_token(data: dict):
+    to_encode = data.copy()
+    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("sub")
+        if username is None:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        return username
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+@app.post("/token")
+async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    session = connect_db()
+    try:
+        user = session.query(User).filter(User.name == form_data.username).first()
+        if not user or not pwd_context.verify(form_data.password, user.password_hash):
+            raise HTTPException(status_code=401, detail="Incorrect username or password")
+        token = create_access_token(data={"sub": user.name})
+        return {"access_token": token, "token_type": "bearer"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Login error: " + str(e))
+    finally:
+        session.close()
 
 @app.get("/healthcheck")
 def read_root():
@@ -30,75 +81,55 @@ def read_root():
     return drug.name
 
 @app.get("/get-drug/{id}")
-async def get_drug(id: int):
-    """
-    Retrieve drug information by ID
-    """
+async def get_drug(id: int, current_user: str = Depends(get_current_user)):
     session = connect_db()
-
-    try:
-        drug = session.query(Drug).filter(Drug.id == id).one()  # Cambio de .first() a .one()
-        
-        return {
-            "id": drug.id,
-            "name": drug.name,
-            "short_term_effects": drug.short_term_effects,
-            "long_term_effects": drug.long_term_effects,
-            "history": drug.history,
-            "age_range_plus_consumption": drug.age_range_plus_consumption,
-            "consumition_frequency": drug.consumition_frequency,
-            "probability_of_abandonment": drug.probability_of_abandonment
-        }
-    except Exception as e:
-        raise HTTPException(status_code=404, detail=f"Drug not found: {str(e)}")
-    finally:
-        session.close()
+    drug = session.query(Drug).filter(Drug.id == id).one()
+    return {
+        "id": drug.id,
+        "name": drug.name,
+        "short_term_effects": drug.short_term_effects,
+        "long_term_effects": drug.long_term_effects,
+        "history": drug.history,
+        "age_range_plus_consumption": drug.age_range_plus_consumption,
+        "consumition_frequency": drug.consumition_frequency,
+        "probability_of_abandonment": drug.probability_of_abandonment
+    }
 
 @app.get("/get-drug-by-name/{name}")
-async def get_drug_by_name(name: str):
-    """
-    Get a drug by its name
-    """
-    try:
-        session = connect_db()
-        drug = session.query(Drug).filter_by(name=name).first()
-        if not drug:
-            raise HTTPException(status_code=404, detail=f"Drug not found")
-        return {
-            "id": drug.id,
-            "name": drug.name,
-            "short_term_effects": drug.short_term_effects,
-            "long_term_effects": drug.long_term_effects,
-            "history": drug.history,
-            "age_range_plus_consumption": drug.age_range_plus_consumption,
-            "consumition_frequency": drug.consumition_frequency,
-            "probability_of_abandonment": drug.probability_of_abandonment
-        }
-    except Exception as e:
-        raise HTTPException(status_code=404, detail=f"Drug not found: {str(e)}")
-    finally:    
-        session.close()
+async def get_drug_by_name(name: str, current_user: str = Depends(get_current_user)):
+    session = connect_db()
+    drug = session.query(Drug).filter_by(name=name).first()
+    if not drug:
+        raise HTTPException(status_code=404, detail="Drug not found")
+    return {
+        "id": drug.id,
+        "name": drug.name,
+        "short_term_effects": drug.short_term_effects,
+        "long_term_effects": drug.long_term_effects,
+        "history": drug.history,
+        "age_range_plus_consumption": drug.age_range_plus_consumption,
+        "consumition_frequency": drug.consumition_frequency,
+        "probability_of_abandonment": drug.probability_of_abandonment
+    }
 
 @app.post("/post-drug")
 async def post_drug(
-    name: str, 
-    short_term_effects: str = None, 
+    name: str,
+    short_term_effects: str = None,
     long_term_effects: str = None,
     history: str = None,
     age_range_plus_consumption: float = None,
     consumition_frequency: float = None,
-    probability_of_abandonment: float = None
+    probability_of_abandonment: float = None,
+    current_user: str = Depends(get_current_user)
 ):
-    """
-    Create a new drug record
-    """
     session = connect_db()
     id = session.query(func.max(Drug.id)).scalar() or 0
     id += 1
     
     new_drug = Drug(
-        id=id, 
-        name=name, 
+        id=id,
+        name=name,
         short_term_effects=short_term_effects,
         long_term_effects=long_term_effects,
         history=history,
@@ -118,10 +149,7 @@ async def post_drug(
     return response
 
 @app.delete("/delete-drug/{id}")
-async def delete_drug(id: int):
-    """
-    Delete a drug record by ID
-    """
+async def delete_drug(id: int, current_user: str = Depends(get_current_user)):
     session = connect_db()
     drug = session.query(Drug).filter(Drug.id == id).first()
     if drug is None:
@@ -133,10 +161,7 @@ async def delete_drug(id: int):
     return {"message": "Drug record deleted successfully"}
 
 @app.delete("/delete-drug-by-name/{name}")
-async def delete_drug_by_name(name: str):
-    """
-    Delete a drug record by its name
-    """
+async def delete_drug_by_name(name: str, current_user: str = Depends(get_current_user)):
     session = connect_db()
     drug = session.query(Drug).filter_by(name=name).first()
     if drug is None:
@@ -147,28 +172,23 @@ async def delete_drug_by_name(name: str):
     session.close()
     return {"message": "Drug record deleted successfully"}
 
-
 @app.put("/update-drug/{id}")
 async def update_drug(
-    id: int, 
-    name: str = None, 
-    short_term_effects: str = None, 
+    id: int,
+    name: str = None,
+    short_term_effects: str = None,
     long_term_effects: str = None,
     history: str = None,
     age_range_plus_consumption: float = None,
     consumition_frequency: float = None,
-    probability_of_abandonment: float = None
+    probability_of_abandonment: float = None,
+    current_user: str = Depends(get_current_user)
 ):
-    """
-    Update an existing drug record
-    """
     session = connect_db()
     drug = session.query(Drug).filter(Drug.id == id).first()
-    
     if drug is None:
         raise HTTPException(status_code=404, detail="Drug not found")
     
-    # Update fields only if they are provided
     if name is not None:
         drug.name = name
     if short_term_effects is not None:
@@ -190,24 +210,21 @@ async def update_drug(
 
 @app.put("/update-drug-by-name")
 async def update_drug_by_name(
-    name: str, 
-    new_name: str = None, 
-    short_term_effects: str = None, 
+    name: str,
+    new_name: str = None,
+    short_term_effects: str = None,
     long_term_effects: str = None,
     history: str = None,
     age_range_plus_consumption: float = None,
     consumition_frequency: float = None,
-    probability_of_abandonment: float = None
+    probability_of_abandonment: float = None,
+    current_user: str = Depends(get_current_user)
 ):
-    """
-    Update an existing drug record by its name
-    """
     session = connect_db()
     drug = session.query(Drug).filter_by(name=name).first()
-    
     if drug is None:
         raise HTTPException(status_code=404, detail="Drug not found")
-
+    
     if new_name is not None:
         drug.name = new_name
     if short_term_effects is not None:
