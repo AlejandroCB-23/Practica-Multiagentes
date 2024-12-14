@@ -1,4 +1,4 @@
-import hashlib
+from passlib.hash import bcrypt
 from sqlalchemy import create_engine,select,delete
 from sqlalchemy.orm import sessionmaker
 import pandas as pd
@@ -24,10 +24,23 @@ def connect_db():
     session = factory()
     return session
 
+def delete_all_users():
+    """
+    Delete all users from the database
+    """
+    session = connect_db()
+
+    try:
+        session.query(User).delete()
+        session.commit()
+        print("All users deleted successfully!")
+    except Exception as e:
+        print(f"Error while deleting users: {e}")
+        session.rollback()
+
 
 def hash_password(password):
-    return hashlib.sha256(password.encode('utf-8')).hexdigest()
-
+    return bcrypt.hash(password)
 
 def main():
     """Create database from the metadata"""
