@@ -4,5 +4,5 @@ requests
 bs4
 pandas
 python-dotenv
-dotenv
 groq
+passlib[bcrypt]
