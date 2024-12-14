@@ -3,6 +3,8 @@ import LoginForm from './LoginForm/LoginForm';
 import Dashboard from './Dashboard/Dashboard';
 import Akino from './akino/akino';
 import ProtectedRoute from './ProtectedRouete/ProtectedRoute';
+import Cuestionario from './akino-cuestionario/akino-cuestionario';
+
 
 function App() {
     return (
@@ -17,6 +19,11 @@ function App() {
                 <Route path="/akino" element={
                     <ProtectedRoute>
                         <Akino />
+                    </ProtectedRoute>
+                } />
+                <Route path="/akino-cuestionario" element={
+                    <ProtectedRoute>
+                        <Cuestionario />
                     </ProtectedRoute>
                 } />
             </Routes>
