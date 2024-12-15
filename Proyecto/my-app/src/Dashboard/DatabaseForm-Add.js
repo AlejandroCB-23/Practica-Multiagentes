@@ -67,19 +67,18 @@ function DatabaseForm({setShowForm}) {
       
       if (response.ok) {
         setSuccess('Elemento añadido exitosamente');
+        resetForm();
       } else {
         throw new Error('Error al añadir elemento');
       }
     } catch (error) {
       console.error('Error:', error);
       setError('Ocurrió un error al añadir el elemento');
-    } finally {
-      setShowForm(false);
-      resetForm();
-    }
+    } 
   };
 
   const handleClose = () => {
+    setShowForm(false);
     resetForm();
   };
 
