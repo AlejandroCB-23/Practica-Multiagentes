@@ -102,17 +102,13 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     session = connect_db()
     try:
-        # Busca al usuario en la base de datos
         user = session.query(User).filter(User.name == form_data.username).first()
         
-        # Verifica la contraseña
         if not user or not pwd_context.verify(form_data.password, user.password_hash):
             raise HTTPException(status_code=401, detail="Incorrect username or password")
         
-        # Genera el token de acceso
         token = create_access_token(data={"sub": user.name})   
 
-        # Devuelve el token junto con el rol
         return {
             "access_token": token,
             "token_type": "bearer",
