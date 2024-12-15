@@ -20,6 +20,8 @@
     z-index: 1000;
     width: 50%;
     max-width: 500px;
+    max-height: 100vh;
+    overflow: auto;
   }
   
   .form {
@@ -52,6 +54,10 @@
     border: 1px solid #ddd;
     border-radius: 4px;
     transition: border-color 0.3s ease;
+    max-width: 450px;
+    max-height: 450px;
+    min-width: min-content;
+    min-height: min-content;
   }
   
   .input:focus, 

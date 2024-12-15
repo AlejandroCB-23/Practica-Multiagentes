@@ -234,6 +234,7 @@ function DatabaseForm({ setShowForm }) {
                 value={formData.name}
                 onChange={handleChange}
                 className={styles.input}
+                placeholder='Ingrese el nombre de la droga'
                 required
               />
             </div>
