@@ -4,3 +4,4 @@ Proyecto/my-app/package-lock.json
 *.pyc
 __pycache__
 .env
+makefile

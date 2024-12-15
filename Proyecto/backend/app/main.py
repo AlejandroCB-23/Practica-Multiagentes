@@ -11,7 +11,8 @@ from dotenv import load_dotenv
 from drugs_table import Drug
 from user_table import User, Role
 from akinator_llm import Akinator
-
+from functools import wraps
+from fastapi import HTTPException, Depends
 
 
 load_dotenv()
@@ -37,8 +38,6 @@ pwd_context = CryptContext(
     schemes=["bcrypt"],
     deprecated="auto"
 )
-from functools import wraps
-from fastapi import HTTPException, Depends
 
 def role_required(required_permission):
     def decorator(func):
@@ -132,35 +131,51 @@ def read_root():
 @role_required('get')
 async def get_drug(id: int, current_user: str = Depends(get_current_user)):
     session = connect_db()
-    drug = session.query(Drug).filter(Drug.id == id).one()
-    return {
-        "id": drug.id,
-        "name": drug.name,
-        "short_term_effects": drug.short_term_effects,
-        "long_term_effects": drug.long_term_effects,
-        "history": drug.history,
-        "age_range_plus_consumption": drug.age_range_plus_consumption,
-        "consumition_frequency": drug.consumition_frequency,
-        "probability_of_abandonment": drug.probability_of_abandonment
-    }
+    try:
+        drug = session.query(Drug).filter(Drug.id == id).one_or_none()
+        if drug is None:
+            raise HTTPException(status_code=404, detail="Drug not found")
+        
+        return {
+            "id": drug.id,
+            "name": drug.name,
+            "short_term_effects": drug.short_term_effects,
+            "long_term_effects": drug.long_term_effects,
+            "history": drug.history,
+            "age_range_plus_consumption": drug.age_range_plus_consumption,
+            "consumition_frequency": drug.consumition_frequency,
+            "probability_of_abandonment": drug.probability_of_abandonment
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving drug: {str(e)}")
+    finally:
+        session.close()
+
 
 @app.get("/get-drug-by-name/{name}")
 @role_required('get')
 async def get_drug_by_name(name: str, current_user: str = Depends(get_current_user)):
     session = connect_db()
-    drug = session.query(Drug).filter_by(name=name).first()
-    if not drug:
-        raise HTTPException(status_code=404, detail="Drug not found")
-    return {
-        "id": drug.id,
-        "name": drug.name,
-        "short_term_effects": drug.short_term_effects,
-        "long_term_effects": drug.long_term_effects,
-        "history": drug.history,
-        "age_range_plus_consumption": drug.age_range_plus_consumption,
-        "consumition_frequency": drug.consumition_frequency,
-        "probability_of_abandonment": drug.probability_of_abandonment
-    }
+    try: 
+        drug = session.query(Drug).filter_by(name=name).first()
+        if drug is None:
+            raise HTTPException(status_code=404, detail="Drug not found")
+        return {
+            "id": drug.id,
+            "name": drug.name,
+            "short_term_effects": drug.short_term_effects,
+            "long_term_effects": drug.long_term_effects,
+            "history": drug.history,
+            "age_range_plus_consumption": drug.age_range_plus_consumption,
+            "consumition_frequency": drug.consumition_frequency,
+            "probability_of_abandonment": drug.probability_of_abandonment
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving drug: {str(e)}")
+    finally:
+        session.close()
+
 
 @app.post("/post-drug")
 @role_required('post')
@@ -169,7 +184,7 @@ async def post_drug(
     short_term_effects: str = None,
     long_term_effects: str = None,
     history: str = None,
-    age_range_plus_consumption: float = None,
+    age_range_plus_consumption: str = None,
     consumition_frequency: float = None,
     probability_of_abandonment: float = None,
     current_user: str = Depends(get_current_user)
@@ -203,27 +218,51 @@ async def post_drug(
 @role_required('delete')
 async def delete_drug(id: int, current_user: str = Depends(get_current_user)):
     session = connect_db()
-    drug = session.query(Drug).filter(Drug.id == id).first()
-    if drug is None:
-        raise HTTPException(status_code=404, detail="Drug not found")
-    
-    session.delete(drug)
-    session.commit()
-    session.close()
-    return {"message": "Drug record deleted successfully"}
+
+    try:
+        drug = session.query(Drug).filter(Drug.id == id).first()
+        if drug is None:
+            raise HTTPException(status_code=404, detail="Drug not found")
+        
+        session.delete(drug)
+        session.commit()
+        return {"message": "Drug record deleted successfully"}
+
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        session.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error deleting drug: {str(e)}"
+        )
+    finally:
+        session.close()
 
 @app.delete("/delete-drug-by-name/{name}")
 @role_required('delete')
 async def delete_drug_by_name(name: str, current_user: str = Depends(get_current_user)):
     session = connect_db()
-    drug = session.query(Drug).filter_by(name=name).first()
-    if drug is None:
-        raise HTTPException(status_code=404, detail="Drug not found")
+
+    try:
+        drug = session.query(Drug).filter_by(name=name).first()
+        if drug is None:
+            raise HTTPException(status_code=404, detail="Drug not found")
+        
+        session.delete(drug)
+        session.commit()
+        return {"message": "Drug record deleted successfully"}
     
-    session.delete(drug)
-    session.commit()
-    session.close()
-    return {"message": "Drug record deleted successfully"}
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        session.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error deleting drug: {str(e)}"
+        )
+    finally:
+        session.close()
 
 @app.put("/update-drug/{id}")
 @role_required('put')
@@ -233,34 +272,40 @@ async def update_drug(
     short_term_effects: str = None,
     long_term_effects: str = None,
     history: str = None,
-    age_range_plus_consumption: float = None,
+    age_range_plus_consumption: str = None,
     consumition_frequency: float = None,
     probability_of_abandonment: float = None,
     current_user: str = Depends(get_current_user)
-):
+ ):
+
     session = connect_db()
-    drug = session.query(Drug).filter(Drug.id == id).first()
-    if drug is None:
-        raise HTTPException(status_code=404, detail="Drug not found")
-    
-    if name is not None:
-        drug.name = name
-    if short_term_effects is not None:
-        drug.short_term_effects = short_term_effects
-    if long_term_effects is not None:
-        drug.long_term_effects = long_term_effects
-    if history is not None:
-        drug.history = history
-    if age_range_plus_consumption is not None:
-        drug.age_range_plus_consumption = age_range_plus_consumption
-    if consumition_frequency is not None:
-        drug.consumition_frequency = consumition_frequency
-    if probability_of_abandonment is not None:
-        drug.probability_of_abandonment = probability_of_abandonment
-    
-    session.commit()
-    session.close()
-    return {"message": "Drug record updated successfully"}
+    try:
+        drug = session.query(Drug).filter(Drug.id == id).first()
+        if drug is None:
+            raise HTTPException(status_code=404, detail="Drug not found")
+        
+        if name is not None:
+            drug.name = name
+        if short_term_effects is not None:
+            drug.short_term_effects = short_term_effects
+        if long_term_effects is not None:
+            drug.long_term_effects = long_term_effects
+        if history is not None:
+            drug.history = history
+        if age_range_plus_consumption is not None:
+            drug.age_range_plus_consumption = age_range_plus_consumption
+        if consumition_frequency is not None:
+            drug.consumition_frequency = consumition_frequency
+        if probability_of_abandonment is not None:
+            drug.probability_of_abandonment = probability_of_abandonment
+        
+        session.commit()
+        return {"message": "Drug record updated successfully"}
+    except Exception as e:
+        session.rollback()
+        raise HTTPException(status_code=500, detail=f"Error updating drug: {str(e)}")
+    finally:
+        session.close()
 
 @app.put("/update-drug-by-name")
 @role_required('put')
@@ -270,34 +315,45 @@ async def update_drug_by_name(
     short_term_effects: str = None,
     long_term_effects: str = None,
     history: str = None,
-    age_range_plus_consumption: float = None,
+    age_range_plus_consumption: str = None,
     consumition_frequency: float = None,
     probability_of_abandonment: float = None,
     current_user: str = Depends(get_current_user)
 ):
-    session = connect_db()
-    drug = session.query(Drug).filter_by(name=name).first()
-    if drug is None:
-        raise HTTPException(status_code=404, detail="Drug not found")
-    
-    if new_name is not None:
-        drug.name = new_name
-    if short_term_effects is not None:
-        drug.short_term_effects = short_term_effects
-    if long_term_effects is not None:
-        drug.long_term_effects = long_term_effects
-    if history is not None:
-        drug.history = history
-    if age_range_plus_consumption is not None:
-        drug.age_range_plus_consumption = age_range_plus_consumption
-    if consumition_frequency is not None:
-        drug.consumition_frequency = consumition_frequency
-    if probability_of_abandonment is not None:
-        drug.probability_of_abandonment = probability_of_abandonment
-    
-    session.commit()
-    session.close()
-    return {"message": "Drug record updated successfully"}
+    try:
+        session = connect_db()
+        drug = session.query(Drug).filter_by(name=name).first()
+        if drug is None:
+            raise HTTPException(status_code=404, detail="Drug not found")
+        
+        if new_name is not None:
+            drug.name = new_name
+        if short_term_effects is not None:
+            drug.short_term_effects = short_term_effects
+        if long_term_effects is not None:
+            drug.long_term_effects = long_term_effects
+        if history is not None:
+            drug.history = history
+        if age_range_plus_consumption is not None:
+            drug.age_range_plus_consumption = age_range_plus_consumption
+        if consumition_frequency is not None:
+            drug.consumition_frequency = consumition_frequency
+        if probability_of_abandonment is not None:
+            drug.probability_of_abandonment = probability_of_abandonment
+        
+        session.commit()
+        return {"message": "Drug record updated successfully"}
+
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        session.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error updating drug: {str(e)}"
+        )
+    finally:
+        session.close()
 
 @app.get("/get-questions")
 @role_required('get')
