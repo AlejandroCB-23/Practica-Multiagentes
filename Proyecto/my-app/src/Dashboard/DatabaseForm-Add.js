@@ -12,6 +12,9 @@ function DatabaseForm({setShowForm}) {
     probability_of_abandonment: ''
   });
 
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
   const resetForm = () => {
     setFormData({
       name: '',             
@@ -25,6 +28,8 @@ function DatabaseForm({setShowForm}) {
   };
 
   const handleChange = (e) => {
+    setError('');
+    setSuccess('');
     const { name, value } = e.target;
     setFormData(prevState => ({
       ...prevState,
@@ -33,10 +38,12 @@ function DatabaseForm({setShowForm}) {
   };
 
   const handleSubmit = async (e) => {
+    setError('');
+    setSuccess('');
     e.preventDefault();
     const token = localStorage.getItem('token');
     if (!token) {
-      alert('No hay sesión activa. Por favor inicie sesión.');
+      setError('No hay sesión activa. Por favor inicie sesión.');
       return;
     }
     const params = new URLSearchParams({
@@ -59,13 +66,13 @@ function DatabaseForm({setShowForm}) {
       });
       
       if (response.ok) {
-        alert('Elemento añadido exitosamente');
+        setSuccess('Elemento añadido exitosamente');
       } else {
         throw new Error('Error al añadir elemento');
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Ocurrió un error al añadir el elemento');
+      setError('Ocurrió un error al añadir el elemento');
     } finally {
       setShowForm(false);
       resetForm();
@@ -73,7 +80,6 @@ function DatabaseForm({setShowForm}) {
   };
 
   const handleClose = () => {
-    setShowForm(false);
     resetForm();
   };
 
@@ -174,6 +180,17 @@ function DatabaseForm({setShowForm}) {
           <button type="submit" className={styles.submitButton}>
             Añadir Droga
           </button>
+          {error && (
+            <div className={styles.errorMessage}>
+              {error}
+            </div>
+          )}
+          {success && (
+            <div className={styles.successMessage}>
+              {success}
+            </div>
+          )}
+
           <button type="button" className={styles.closeButton} onClick={handleClose}>X</button>
         </form>
       </div>
