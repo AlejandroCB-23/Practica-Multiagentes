@@ -6,3 +6,4 @@ pandas
 python-dotenv
 groq
 passlib[bcrypt]
+bcrypt==3.2.2
