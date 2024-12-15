@@ -1,145 +1,189 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import './akino-cuestionario.css';
 import logo from '../assets/logo.jpg';
 import warningIcon from '../assets/warning.png';
 import snoopDog from '../assets/snoop_dog.png';
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import clickSound from '../assets/snoop-aah-sound.mp3';
-import LoadingGif from './LoadingGif';
-import adiccion1 from '../assets/addiction-resolution/marijuana.jpg';
+import LoadingGif from './LoadingGif'; // Assuming you have this component for loading state
 
-function getAdiccion(answers) {
-    /*devuelve la adiccion obtenida traves del las
-    repuestas del usuario y al uso del llm para la respuesta*/
-    return "Marijuana"; // valor provisional
+
+async function getAdiccion(answers) {
+    try {
+        const response = await fetch('http://localhost:8000/get-response', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            },
+            body: JSON.stringify({ answers: answers }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to get response from the server. Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.response) {
+            return data.response;
+        } else {
+            throw new Error('Invalid response format from the server');
+        }
+    } catch (error) {
+        console.error('Error fetching addiction type:', error);
+        return 'Unknown';
+    }
 }
 
-
 function getAdiccionImage(adiccion) {
-    /*
-    devuelve la imagen de la adiccion obtenida
-    adiccion : String
-    */
-    return adiccion1; // valor provisional
+    // Map addiction types to image filenames
+    const addictionImages = {
+        'Alcohol': require('../assets/addiction-resolution/Alcohol.png'),
+        'Tabaco': require('../assets/addiction-resolution/Tabaco.png'),
+        'Marihuana': require('../assets/addiction-resolution/Marihuana.png'),
+        'Cocaina': require('../assets/addiction-resolution/Cocaina.png'),
+        'Heroina': require('../assets/addiction-resolution/Heroina.png'),
+        'Metanfetamina': require('../assets/addiction-resolution/Metanfetamina.png'),
+    };
+
+    // Return the corresponding image or the default if not found
+    return addictionImages[adiccion] || require('../assets/addiction-resolution/unknown.png');
 }
 
 function Cuestionario() {
     const navigate = useNavigate();
 
-    // evento cuando haga click en volver al dashboard
+    // Function to handle going back to the dashboard
     const handleBackDashboard = () => {
         navigate('/dashboard');
     };
 
-    // evento para reproducir el sonido del click
+    // Function to play the click sound
     const playClickSound = () => {
-        const audio = new Audio(clickSound); // Crea una nueva instancia de Audio
-        audio.play(); // Reproduce el sonido
+        const audio = new Audio(clickSound);
+        audio.play();
     };
 
-    /*
-    Preguntas de prueba para el cuestionario
-    alomejor sería lo suyo tener un json con las preguntas
-    para no tener un array grande de preguntas en el codigo
-    */
-    const questions = [
-        {
-            question: "¿Te consideras un adicto al trabajo?",
-            options: ["Sí", "No", "A veces"],
-        },
-        {
-            question: "¿Te cuesta desconectar del trabajo?",
-            options: ["Sí", "No", "A veces"],
-        },
-        {
-            question: "¿Te sientes culpable cuando no trabajas?",
-            options: ["Sí", "No", "A veces"],
-        }
-    ];
-    
-    // Definicion de variables de estado
-    const total_questions = questions.length; // Número total de preguntas
-    const [contador, setContador] = useState(1); // Contador de preguntas
-
+    // Defining state variables
+    const [questions, setQuestions] = useState([]);
+    const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(true); // To track loading state
+    const [contador, setContador] = useState(1);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [answers, setAnswers] = useState([]); // guarda las preguntas y respuestas del usuario
-    const [isTimeUp, setIsTimeUp] = useState(false); // Estado para controlar si el tiempo ha pasado del timer
+    const [answers, setAnswers] = useState([]);
+    const [isTimeUp, setIsTimeUp] = useState(false);
+    const [addictionResult, setAddictionResult] = useState(null); // To store addiction result
 
+    // Function to fetch questions from the backend API
+    const fetchQuestions = async () => {
+        setError('');
+        setIsLoading(true); // Start loading
 
-    // Función para manejar la selección de la respuesta
+        const token = localStorage.getItem('token');
+        if (!token) {
+            setError('No hay sesión activa. Por favor inicie sesión.');
+            setIsLoading(false);
+            return;
+        }
+
+        try {
+            const response = await fetch('http://localhost:8000/get-questions', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.questions) {
+                    setQuestions(data.questions); // Set the fetched questions
+                } else {
+                    throw new Error('No se encontraron preguntas');
+                }
+            } else {
+                throw new Error('Error al obtener las preguntas');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            setError('No se pudieron cargar las preguntas. Intenta nuevamente.');
+        } finally {
+            setIsLoading(false); // Stop loading
+        }
+    };
+
+    // Fetch the questions on component mount
+    useEffect(() => {
+        fetchQuestions();
+    }, []); // Empty dependency array ensures it's only called once when the component mounts
+
+    // Function to handle the user's answer selection
     const handleAnswerSelect = (answer) => {
         playClickSound();
-        // Guarda la respuesta del usuario
         setAnswers([...answers, { question: questions[currentQuestionIndex].question, answer }]);
         setCurrentQuestionIndex(currentQuestionIndex + 1);
         setContador(contador + 1);
     };
 
-    // temporizador de 5 seg para mostrar complejidad (queda wapo)
+    // Timer for 5 seconds to show results after completing the quiz
     useEffect(() => {
-        // Solo se activa cuando se termine el cuestionario
-        if (currentQuestionIndex >= total_questions - 1) {
-          const timer = setTimeout(() => {
-            setIsTimeUp(true); // Cuando el temporizador termine, cambia el estado
-          }, 5000); // Espera 5 segundos antes de ejecutar la acción
-    
-          // Limpiar el temporizador si el componente se desmonta antes de que termine
-          return () => clearTimeout(timer);
+        if (currentQuestionIndex >= questions.length) {
+            const timer = setTimeout(async () => {
+                setIsTimeUp(true); // Time's up, show the result
+                const addiction = await getAdiccion(answers); // Get addiction response
+                setAddictionResult(addiction); // Store the addiction result
+            }, 5000); // 5000 for 5 seconds delay
+
+            return () => clearTimeout(timer);
         }
-      }, [currentQuestionIndex]); // El efecto se ejecutará cuando cambie currentQuestionIndex
+    }, [currentQuestionIndex, questions.length, answers]);
 
     return (
         <div className="div-akino">
-            {/*Cabecera de la página*/}
-            <header className='header-akino'>
-                <img src={logo} className='logo'/>
+            {/* Header */}
+            <header className="header-akino">
+                <img src={logo} className="logo" alt="Logo" />
                 <h1>AKINO</h1>
                 <button className="button-back" onClick={handleBackDashboard}>Volver al Dashboard</button>
             </header>
-            
-            {/*Contenido de la página
-                - La imagen del colegón
-                - El cuestionario
-            */}
-            <div className="content-section">
-                <div className='snoop-dog-container'>
-                    <img src={snoopDog} alt="Snoop Dog" className="snoop-dog" />
-                    {/*Cuestionario*/}
-                    <div className="question-container">
-                        {currentQuestionIndex <= total_questions - 1 ? ( // Si el cuestionario no ha terminado, muestra las preguntas
-                            <div className="options-container">
 
-                                <h2> {/* Muestra la pregunta actual */}
-                                    {contador}/{total_questions} - {questions[currentQuestionIndex]?.question}
+            {/* Content */}
+            <div className="content-section">
+                <div className="snoop-dog-container">
+                    <img src={snoopDog} alt="Snoop Dog" className="snoop-dog" />
+                    <div className="question-container">
+                        {isLoading ? (
+                            <LoadingGif /> // Show loading animation while fetching
+                        ) : error ? (
+                            <div className="error-message">{error}</div> // Show error if API fails
+                        ) : currentQuestionIndex < questions.length ? (
+                            <div className="options-container">
+                                <h2>
+                                    {contador}/{questions.length} - {questions[currentQuestionIndex]?.question}
                                 </h2>
-                                
-                                {/* Muestra las opciones de respuesta */}
+
+                                {/* Display options */}
                                 {questions[currentQuestionIndex]?.options.map((option, index) => (
                                     <button
-                                    key={index}
-                                    className="option-button"
-                                    onClick={() => handleAnswerSelect(option)}
+                                        key={index}
+                                        className="option-button"
+                                        onClick={() => handleAnswerSelect(option)}
                                     >
-                                    {option}
+                                        {option}
                                     </button>
                                 ))}
                             </div>
-                        ) : ( // Si el cuestionario ha terminado, muestra los resultados
+                        ) : (
+                            // Show results after the last question
                             isTimeUp ? (
-                                (() => {
-                                    console.log(answers); //Inspeccionar -> Console para ver las respuestas guardadas
-                                    let adiccion = getAdiccion(answers);
-                                    let imagen = getAdiccionImage(adiccion);
-                                    return (
-                                        <div>
-                                            <p>La adicción que podrías tener es:</p>
-                                            <img src={imagen} className='adiction-image' ></img>
-                                            <p>{adiccion}</p>
-                                        </div>
-                                    );
-                                })()
+                                <div>
+                                    <p>La adicción que podrías tener es:</p>
+                                    <img src={getAdiccionImage(addictionResult)} className="adiction-image" alt="Adicción" />
+                                    <p>{addictionResult}</p>
+                                </div>
                             ) : (
-                            // Si el tiempo no ha terminado, muestra un mensaje o espera antes de mostrar los resultados
                                 <LoadingGif />
                             )
                         )}
@@ -147,12 +191,12 @@ function Cuestionario() {
                 </div>
 
                 <article>
-                <div className="warning-container">
-                    <img src={warningIcon} alt="Icono de advertencia" className="warning-icon" />
-                    <p>
-                        ¡AVERTENCIA! Este test no es un diagnóstico médico, si tienes dudas acerca de tu salud mental, te recomendamos acudir con un profesional.
-                    </p>
-                </div>
+                    <div className="warning-container">
+                        <img src={warningIcon} alt="Warning Icon" className="warning-icon" />
+                        <p>
+                            ¡AVERTENCIA! Este test no es un diagnóstico médico, si tienes dudas acerca de tu salud, te recomendamos acudir con un profesional.
+                        </p>
+                    </div>
                 </article>
             </div>
         </div>

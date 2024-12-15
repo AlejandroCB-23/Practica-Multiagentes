@@ -1,5 +1,5 @@
 import os
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy import create_engine, func
@@ -10,6 +10,8 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from drugs_table import Drug
 from user_table import User, Role
+from akinator_llm import Akinator
+
 
 
 load_dotenv()
@@ -296,3 +298,32 @@ async def update_drug_by_name(
     session.commit()
     session.close()
     return {"message": "Drug record updated successfully"}
+
+@app.get("/get-questions")
+@role_required('get')
+async def get_questions(current_user: str = Depends(get_current_user)):
+    akinator = Akinator()
+    questions = akinator.get_questions()
+    return {"questions": [{"question": q, "options": ["Si", "No", "No se", "Probablemente", "Probablemente no"]} for q in questions]}
+
+@app.post("/get-response")
+@role_required('get')
+async def get_response(request: Request, current_user: str = Depends(get_current_user)):
+    try:
+        body = await request.json()
+        answers = body.get('answers', None)
+
+        if not answers:
+            raise HTTPException(status_code=400, detail="'answers' field is required.")
+        
+        if not isinstance(answers, list):
+            raise HTTPException(status_code=400, detail="'answers' must be a list of strings.")
+        
+        akinator = Akinator()
+        response = await akinator.get_evaluation(answers)  # Ensure this is awaited if it's async
+        
+        return {"response": response}  # Ensure this is a proper JSON response
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error processing request: {str(e)}")
+
