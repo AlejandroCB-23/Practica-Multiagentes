@@ -4,12 +4,13 @@ services:
     build:
       context: ./scripts
       dockerfile: Dockerfile  # Asegúrate de tener un Dockerfile en la carpeta ./scripts para Python
+    depends_on:
+      postgres-db:
+        condition: service_healthy
     container_name: python-scripts
     volumes:
       - ./scripts:/app/scripts  # Mapea tu carpeta local de scripts a /app/scripts en el contenedor
       - ./datasets:/app/datasets  # Mapea tu carpeta local de datasets a /app/datasets en el contenedor
-    depends_on:
-      - postgres-db
     networks:
       - app-network
 
@@ -48,7 +49,10 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - postgres-db
+      python-scripts:
+        condition: service_completed_successfully
+      postgres-db:
+        condition: service_healthy
     networks:
       - app-network
 
