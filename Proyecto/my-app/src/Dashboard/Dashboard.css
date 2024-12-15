@@ -125,6 +125,13 @@ html, body {
 }
 
 
+/* Estilo para los botones deshabilitados */
+.button-dashboard.disabled {
+  pointer-events: none; /* No permitir interacción */
+}
+
+
+
 
 
 
