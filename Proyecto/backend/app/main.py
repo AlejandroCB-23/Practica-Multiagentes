@@ -1,5 +1,5 @@
 import os
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy import create_engine, func
@@ -298,10 +298,6 @@ async def get_questions(current_user: str = Depends(get_current_user)):
     akinator = Akinator()
     questions = akinator.get_questions()
     return {"questions": [{"question": q, "options": ["Si", "No", "No se", "Probablemente", "Probablemente no"]} for q in questions]}
-
-
-from fastapi import FastAPI, Request, HTTPException, Depends
-from akinator_llm import Akinator
 
 @app.post("/get-response")
 @role_required('get')
