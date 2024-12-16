@@ -9,14 +9,22 @@ function DatabaseDetailForm({ setShowForm }) {
 
   const handleDelete = async (e) => {
     e.preventDefault();
-
-    // Reset previous messages
     setError('');
     setSuccess('');
 
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError('No hay sesión activa. Por favor inicie sesión.');
+      return;
+    }
+
     try {
       const response = await fetch(`http://localhost:8000/delete-drug-by-name/${encodeURIComponent(drugName)}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
 
       if (response.ok) {

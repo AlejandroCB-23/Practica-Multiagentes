@@ -12,6 +12,9 @@ function DatabaseForm({setShowForm}) {
     probability_of_abandonment: ''
   });
 
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
   const resetForm = () => {
     setFormData({
       name: '',             
@@ -25,6 +28,8 @@ function DatabaseForm({setShowForm}) {
   };
 
   const handleChange = (e) => {
+    setError('');
+    setSuccess('');
     const { name, value } = e.target;
     setFormData(prevState => ({
       ...prevState,
@@ -33,6 +38,14 @@ function DatabaseForm({setShowForm}) {
   };
 
   const handleSubmit = async (e) => {
+    setError('');
+    setSuccess('');
+    e.preventDefault();
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError('No hay sesión activa. Por favor inicie sesión.');
+      return;
+    }
     const params = new URLSearchParams({
       name: formData.name,
       short_term_effects: formData.short_term_effects,
@@ -42,24 +55,26 @@ function DatabaseForm({setShowForm}) {
       consumition_frequency: formData.consumition_frequency,
       probability_of_abandonment: formData.probability_of_abandonment
     }).toString();
-    e.preventDefault();
+
     try {
       const response = await fetch(`http://localhost:8000/post-drug?${params}`, {
-        method: 'POST'
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
-
+      
       if (response.ok) {
-        alert('Elemento añadido exitosamente');
+        setSuccess('Elemento añadido exitosamente');
+        resetForm();
       } else {
         throw new Error('Error al añadir elemento');
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Ocurrió un error al añadir el elemento');
-    } finally {
-      setShowForm(false);
-      resetForm();
-    }
+      setError('Ocurrió un error al añadir el elemento');
+    } 
   };
 
   const handleClose = () => {
@@ -164,6 +179,17 @@ function DatabaseForm({setShowForm}) {
           <button type="submit" className={styles.submitButton}>
             Añadir Droga
           </button>
+          {error && (
+            <div className={styles.errorMessage}>
+              {error}
+            </div>
+          )}
+          {success && (
+            <div className={styles.successMessage}>
+              {success}
+            </div>
+          )}
+
           <button type="button" className={styles.closeButton} onClick={handleClose}>X</button>
         </form>
       </div>

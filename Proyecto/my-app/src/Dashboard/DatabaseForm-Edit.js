@@ -14,6 +14,8 @@ function DatabaseForm({ setShowForm }) {
 
   const [drugExists, setDrugExists] = useState(false);
   const [drugData, setDrugData] = useState({});
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const resetForm = () => {
     setFormData({
@@ -29,6 +31,8 @@ function DatabaseForm({ setShowForm }) {
   };
 
   const handleChange = (e) => {
+    setError('');
+    setSuccess('');
     const { name, value } = e.target;
     setFormData((prevState) => ({
       ...prevState,
@@ -38,9 +42,20 @@ function DatabaseForm({ setShowForm }) {
 
   const handleGetDrug = async (e) => {
     e.preventDefault();
+    setError('');
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError('No hay sesión activa. Por favor inicie sesión.');
+      return;
+    }
+
     try {
       const response = await fetch(`http://localhost:8000/get-drug-by-name/${encodeURIComponent(formData.name)}`, {
-        method: 'GET'
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
 
       if (response.ok) {
@@ -52,7 +67,7 @@ function DatabaseForm({ setShowForm }) {
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Ocurrió un error al obtener la droga');
+      setError('La droga no existe en la base de datos');
     }
   };
 
@@ -64,6 +79,13 @@ function DatabaseForm({ setShowForm }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setSuccess('');
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError('No hay sesión activa. Por favor inicie sesión.');
+      return;
+    }
     
     const params = new URLSearchParams({
       name: formData.name,
@@ -78,18 +100,21 @@ function DatabaseForm({ setShowForm }) {
     try {
       const response = await fetch(`http://localhost:8000/update-drug-by-name?${params}`, {
         method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
 
       if (response.ok) {
-        alert('Elemento editado exitosamente');
+        setSuccess('Elemento editado exitosamente');
       } else {
         throw new Error('Error al editar elemento');
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Ocurrió un error al editar el elemento');
+      setError('Ocurrió un error al editar el elemento, procure que los datos sean correctos');
     } finally {
-      setShowForm(false);
       resetForm();
     }
   };
@@ -209,11 +234,22 @@ function DatabaseForm({ setShowForm }) {
                 value={formData.name}
                 onChange={handleChange}
                 className={styles.input}
+                placeholder='Ingrese el nombre de la droga'
                 required
               />
             </div>
 
             <button type="submit" className={styles.submitButton}>Buscar Droga</button>
+            {success && (
+              <div className={styles.successMessage}>
+                {success}
+              </div>
+            )}
+            {error && (
+              <div className={styles.errorMessage}>
+                {error}
+              </div>
+            )}
             <button type="button" className={styles.closeButton} onClick={handleClose}>X</button>
           </form>
         )}

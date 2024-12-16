@@ -40,6 +40,26 @@ html, body {
   padding-top: 10px;
 }
 
+
+.button-back {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  background-color: rgb(255, 95, 95)!important;
+  border: 2px solid black;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 10px 20px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.button-back:hover {
+  background-color: #dd57b3 !important;
+  transform: scale(1.05);
+}
 .header-dashboard h1 {
   margin: 0px; 
   font-size: 2.5rem; 
@@ -81,6 +101,10 @@ html, body {
   text-align: center;
   box-sizing: border-box;  
   transition: background-color 0.3s ease, transform 0.3s ease; /* Transición suave para el color de fondo */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Estilo para los botones normales */
@@ -104,6 +128,28 @@ html, body {
   background-color: #dd57b3 !important; 
   transform: scale(1.05); 
 }
+
+/*Estilos para las imagenes de los botones*/
+.button-image{
+  width: 80%;
+  height: 80%;
+  object-fit: cover;
+  border-radius: 30px;
+}
+
+.image-rest{
+  width: 40%;
+  height: 40%;
+  object-fit: cover;
+  border-radius: 30px;
+}
+
+
+/* Estilo para los botones deshabilitados */
+.button-dashboard.disabled {
+  pointer-events: none; /* No permitir interacción */
+}
+
 
 
 

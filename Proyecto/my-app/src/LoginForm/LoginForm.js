@@ -10,25 +10,34 @@ function LoginForm() {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    // NOTE: Test user authentication function
-    // TOFIX: Replace this function with a real authentication function
-    const authenticateUser = (username, password) => {
-        const mockUser = {
-            username: 'admin',
-            password: '1234'
-        };
-        return username === mockUser.username && password === mockUser.password;
-    };
-
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (authenticateUser(username, password)) {
-            setError('');
-            navigate('/dashboard');
-        } else {
-            setError('Usuario o contraseña incorrectos.');
+        try {
+            const formData = new FormData();
+            formData.append('username', username);
+            formData.append('password', password);
+    
+            const response = await fetch('http://localhost:8000/token', {
+                method: 'POST',
+                body: formData
+            });
+    
+            if (response.ok) {
+                const data = await response.json();
+    
+                // Guarda el token y el rol en el almacenamiento local
+                localStorage.setItem('token', data.access_token);
+                localStorage.setItem('role', data.role); // Aquí guardas el rol del usuario
+                setError('');
+                navigate('/dashboard');
+            } else {
+                setError('Usuario o contraseña incorrectos.');
+            }
+        } catch (error) {
+            setError('Error al conectar con el servidor.');
         }
     };
+    
 
     return (
         <div className="Wrapper-Login">

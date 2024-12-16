@@ -61,31 +61,6 @@
     transform: scale(1.05);    /* Aumenta el tamaño del botón al pasar el cursor por encima */
 }
 
-.button-akinator {
-    font-size: 15px;
-    font-family: Arial, sans-serif;
-    font-weight: italic;
-    width: 20vw;
-    height: 6vw;
-    margin-bottom: 60px;
-    background-color: transparent !important; 
-    backdrop-filter:blur(30px) !important; 
-    border: 6px solid rgba(0, 0, 0, 0.6) !important; 
-    color: black !important; 
-    padding: 10px 10px;
-    border: none;
-    border-radius: 30px !important; 
-    cursor: pointer;
-    font-size: 2.5rem !important; 
-    text-align: center;
-    box-sizing: border-box;  
-    transition: background-color 0.3s ease, transform 0.3s ease; /* Transición suave para el color de fondo */
-}
-
-.button-akinator:hover{
-    background-color:#7FFF00 !important;
-    transform: scale(1.05);
-}
 
 .content-section {
     width: 100%; /* Ocupa todo el ancho */
@@ -99,12 +74,56 @@
     justify-content: center;
     padding: 20px;
     text-align: center;
+    overflow: auto;
 }
 
-.content-section h1 {
-    font-size: 3rem;
-    margin-bottom: 40px;
-    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7); /* Sombra para legibilidad */
+.snoop-dog-container{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+    margin-top: 100px;
+}
+
+.snoop-dog {
+    width: 150px;
+    height: 400px; /* Mantiene la relación de aspecto */
+    margin-left: 40px;
+    margin-right: 40px;
+}
+
+.question-container {
+    background-color: transparent;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.question-container h2 {
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.option-button {
+    background-color: #2ecc71;
+    border: none;
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.option-button:hover {
+    background-color: #27ae60;
 }
 
 .warning-container {
@@ -129,3 +148,13 @@
     margin: 0; /* Elimina el margen por defecto del párrafo */
 }
 
+.loading-gif {
+    background-color: transparent; /* Fondo transparente */
+    width: 50px; /* Tamaño de la imagen */
+    height: 50px; /* Tamaño de la imagen */
+}
+
+.adiction-image {
+    width: 200px;
+    height: 200px;
+}
