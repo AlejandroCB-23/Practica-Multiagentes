@@ -14,4 +14,4 @@ RUN pip install -r requirements.txt
 COPY . .
 
 # Define el comando a ejecutar al iniciar el contenedor
-CMD ["python", "prueba.py"]
+CMD ["python", "Main.py"]

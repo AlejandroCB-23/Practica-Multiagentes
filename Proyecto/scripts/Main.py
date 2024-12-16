@@ -1,6 +1,5 @@
 from sqlalchemy import create_engine,select,delete
 from sqlalchemy.orm import sessionmaker
-from person import Person
 import ETL_Extraction
 import ETL_Treatment
 import ETL_Load
