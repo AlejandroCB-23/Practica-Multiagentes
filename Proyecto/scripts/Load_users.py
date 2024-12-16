@@ -66,7 +66,7 @@ def main():
                     print(f"User {name} with role {role} already exists, skipping...")
                     continue
 
-                # Create and add new user
+                # Crear y añadir usuario
                 new_user = User(name=name, password_hash=password_hash, role=role)
                 session.add(new_user)
                 print(f"Added user {name} with role {role}.")

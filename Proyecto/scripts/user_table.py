@@ -6,23 +6,20 @@ from sqlalchemy import UniqueConstraint
 # Base class
 Base = declarative_base()
 
-class User(Base):  # Inherit from Base
+class User(Base):  
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
     name = Column(String)   
     password_hash = Column(String)
-    role = Column(String, ForeignKey('roles.name'))  # Correct ForeignKey
+    role = Column(String, ForeignKey('roles.name'))  
 
     __table_args__ = (UniqueConstraint('name', 'role', name='_name_role_uc'),)
 
-class Role(Base):  # Inherit from Base
+class Role(Base):  
     __tablename__ = 'roles'
     name = Column(String, primary_key=True)
-    can_get = Column(Boolean)  # Read access
-    can_post = Column(Boolean)  # Write access
-    can_put = Column(Boolean)  # Update access
-    can_delete = Column(Boolean)  # Delete access
-    # Roles breakdown:
-    # sigma: All permissions
-    # mewer: Can get and post
-    # rizzler: Can get
+    can_get = Column(Boolean)  # Accesolectura
+    can_post = Column(Boolean)  # Acceso escritura
+    can_put = Column(Boolean)  # Acceso modificación
+    can_delete = Column(Boolean)  # Acceso borrado
+

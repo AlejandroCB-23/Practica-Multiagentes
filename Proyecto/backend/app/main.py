@@ -376,9 +376,9 @@ async def get_response(request: Request, current_user: str = Depends(get_current
             raise HTTPException(status_code=400, detail="'answers' must be a list of strings.")
         
         akinator = Akinator()
-        response = await akinator.get_evaluation(answers)  # Ensure this is awaited if it's async
+        response = await akinator.get_evaluation(answers)  
         
-        return {"response": response}  # Ensure this is a proper JSON response
+        return {"response": response}  
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing request: {str(e)}")

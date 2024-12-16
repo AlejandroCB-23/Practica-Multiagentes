@@ -5,7 +5,7 @@ import warningIcon from '../assets/warning.png';
 import snoopDog from '../assets/snoop_dog.png';
 import { useNavigate } from 'react-router-dom';
 import clickSound from '../assets/snoop-aah-sound.mp3';
-import LoadingGif from './LoadingGif'; // Assuming you have this component for loading state
+import LoadingGif from './LoadingGif'; 
 
 
 async function getAdiccion(answers) {
@@ -37,7 +37,6 @@ async function getAdiccion(answers) {
 }
 
 function getAdiccionImage(adiccion) {
-    // Map addiction types to image filenames
     const addictionImages = {
         'Alcohol': require('../assets/addiction-resolution/Alcohol.png'),
         'Tabaco': require('../assets/addiction-resolution/Tabaco.png'),
@@ -47,38 +46,37 @@ function getAdiccionImage(adiccion) {
         'Metanfetamina': require('../assets/addiction-resolution/Metanfetamina.png'),
     };
 
-    // Return the corresponding image or the default if not found
+    // Devuelve la imagen por defecto si no lo encuentra
     return addictionImages[adiccion] || require('../assets/addiction-resolution/unknown.png');
 }
 
 function Cuestionario() {
     const navigate = useNavigate();
 
-    // Function to handle going back to the dashboard
+    // Función para ir hacia el dashboard
     const handleBackDashboard = () => {
         navigate('/dashboard');
     };
 
-    // Function to play the click sound
+    // Función para reproducir el sonido de click
     const playClickSound = () => {
         const audio = new Audio(clickSound);
         audio.play();
     };
 
-    // Defining state variables
+    // Estados
     const [questions, setQuestions] = useState([]);
     const [error, setError] = useState('');
-    const [isLoading, setIsLoading] = useState(true); // To track loading state
+    const [isLoading, setIsLoading] = useState(true); 
     const [contador, setContador] = useState(1);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [answers, setAnswers] = useState([]);
     const [isTimeUp, setIsTimeUp] = useState(false);
-    const [addictionResult, setAddictionResult] = useState(null); // To store addiction result
+    const [addictionResult, setAddictionResult] = useState(null); 
 
-    // Function to fetch questions from the backend API
     const fetchQuestions = async () => {
         setError('');
-        setIsLoading(true); // Start loading
+        setIsLoading(true); 
 
         const token = localStorage.getItem('token');
         if (!token) {
@@ -99,7 +97,7 @@ function Cuestionario() {
             if (response.ok) {
                 const data = await response.json();
                 if (data.questions) {
-                    setQuestions(data.questions); // Set the fetched questions
+                    setQuestions(data.questions); 
                 } else {
                     throw new Error('No se encontraron preguntas');
                 }
@@ -110,16 +108,16 @@ function Cuestionario() {
             console.error('Error:', error);
             setError('No se pudieron cargar las preguntas. Intenta nuevamente.');
         } finally {
-            setIsLoading(false); // Stop loading
+            setIsLoading(false); 
         }
     };
 
-    // Fetch the questions on component mount
+
     useEffect(() => {
         fetchQuestions();
-    }, []); // Empty dependency array ensures it's only called once when the component mounts
+    }, []); 
 
-    // Function to handle the user's answer selection
+
     const handleAnswerSelect = (answer) => {
         playClickSound();
         setAnswers([...answers, { question: questions[currentQuestionIndex].question, answer }]);
@@ -127,14 +125,13 @@ function Cuestionario() {
         setContador(contador + 1);
     };
 
-    // Timer for 5 seconds to show results after completing the quiz
     useEffect(() => {
         if (currentQuestionIndex >= questions.length) {
             const timer = setTimeout(async () => {
-                setIsTimeUp(true); // Time's up, show the result
-                const addiction = await getAdiccion(answers); // Get addiction response
-                setAddictionResult(addiction); // Store the addiction result
-            }, 5000); // 5000 for 5 seconds delay
+                setIsTimeUp(true); 
+                const addiction = await getAdiccion(answers); 
+                setAddictionResult(addiction); 
+            }, 5000); 
 
             return () => clearTimeout(timer);
         }
@@ -142,29 +139,25 @@ function Cuestionario() {
 
     return (
         <div className="div-akino">
-            {/* Header */}
             <header className="header-akino">
                 <img src={logo} className="logo" alt="Logo" />
                 <h1>AKINO</h1>
                 <button className="button-back" onClick={handleBackDashboard}>Volver al Dashboard</button>
             </header>
 
-            {/* Content */}
             <div className="content-section">
                 <div className="snoop-dog-container">
                     <img src={snoopDog} alt="Snoop Dog" className="snoop-dog" />
                     <div className="question-container">
                         {isLoading ? (
-                            <LoadingGif /> // Show loading animation while fetching
+                            <LoadingGif /> 
                         ) : error ? (
-                            <div className="error-message">{error}</div> // Show error if API fails
+                            <div className="error-message">{error}</div> 
                         ) : currentQuestionIndex < questions.length ? (
                             <div className="options-container">
                                 <h2>
                                     {contador}/{questions.length} - {questions[currentQuestionIndex]?.question}
                                 </h2>
-
-                                {/* Display options */}
                                 {questions[currentQuestionIndex]?.options.map((option, index) => (
                                     <button
                                         key={index}
@@ -176,7 +169,6 @@ function Cuestionario() {
                                 ))}
                             </div>
                         ) : (
-                            // Show results after the last question
                             isTimeUp ? (
                                 <div>
                                     <p>La adicción que podrías tener es:</p>

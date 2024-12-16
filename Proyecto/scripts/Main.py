@@ -28,9 +28,6 @@ def main():
     create_db.main()
     print("Roles cargados")
 
-    # NOTE: This is for updating the hash of the password
-    # When it's not needed anymore, it should be removed
-    Load_users.delete_all_users()
     #Cragamos usuariod
     Load_users.main()
     print("Usuarios cargados")

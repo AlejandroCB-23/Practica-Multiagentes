@@ -29,7 +29,7 @@ function Boton({ texto, onClick, className, img, classImage, disabled }) {
                 className={classImage}
                 alt={texto}
             />
-            <span className="button-text">{texto}</span> {/* Siempre muestra el texto */}
+            <span className="button-text">{texto}</span> 
         </button>
     );
 }

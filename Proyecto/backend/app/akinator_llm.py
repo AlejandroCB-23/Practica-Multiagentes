@@ -14,7 +14,7 @@ class Akinator:
         self.api_key = API_KEY
         self.frequency_penalty = 0.5
         self.presence_penalty = 0.8
-        self.conversation_temperature = 1  # By default is high so the reponse is goofy
+        self.conversation_temperature = 1  
         self.model = "llama3-70b-8192"
         self.client = groq.Groq(api_key=self.api_key)
 
@@ -106,7 +106,7 @@ class Akinator:
             \nUSUARIO:\n"
 
         questions = self.get_questions()
-        for i in range(len(answers)):  # Iterate over the answers and the questions
+        for i in range(len(answers)):  
             prompt += f"Pregunta: {questions[i]} \nRespuesta: {answers[i]} \n\n"
 
         prompt += "RESPUESTA:"
