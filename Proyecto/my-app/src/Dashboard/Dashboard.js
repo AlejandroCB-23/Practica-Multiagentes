@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
 import DatabaseFormAdd from './DatabaseForm-Add';
 import DatabaseFormEdit from './DatabaseForm-Edit';
@@ -10,6 +11,9 @@ import imageDelete from '../assets/delete-image.png';
 import imageModify from '../assets/edit-image.png';
 import imageGet from '../assets/get-image.png';
 import disabledImage from '../assets/prohibition-icon.png'
+
+
+
 
 function Boton({ texto, onClick, className, img, classImage, disabled }) {
     const disabledImg = disabledImage;  // Usar la imagen de deshabilitado importada
@@ -33,11 +37,19 @@ function Boton({ texto, onClick, className, img, classImage, disabled }) {
 
 
 function Dashboard() {
+    const navigate = useNavigate();
+
     const [showFormAdd, setShowFormAdd] = useState(false);
     const [showFormEdit, setShowFormEdit] = useState(false);
     const [showFormDelete, setShowFormDelete] = useState(false);
     const [showFormGet, setShowFormGet] = useState(false);
     const [role, setRole] = useState('');
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('role');
+        navigate('/');
+    };
 
     useEffect(() => {
         // Obtén el rol del almacenamiento local
@@ -55,6 +67,12 @@ function Dashboard() {
 
     return (
         <div className="wrapped-menu">
+            <button 
+                className="button-back" 
+                onClick={handleLogout}
+                >
+                Cerrar Sesión
+            </button>
             <div className="div-dashboard">
                 <header className="header-dashboard">
                     <h1>Menu Principal</h1>
